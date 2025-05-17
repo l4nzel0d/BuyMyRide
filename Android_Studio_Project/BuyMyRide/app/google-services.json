@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "285669562175",
+    "project_id": "buymyride-sem4",
+    "storage_bucket": "buymyride-sem4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285669562175:android:5fd245a05a93756f3a658a",
+        "android_client_info": {
+          "package_name": "com.example.buymyride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkBrc4JUeKtSv15dNP2QJTcjdrdTACPPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
