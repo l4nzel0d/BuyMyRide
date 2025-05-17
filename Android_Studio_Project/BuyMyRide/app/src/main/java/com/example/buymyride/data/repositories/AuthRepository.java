@@ -1,5 +1,10 @@
 package com.example.buymyride.data.repositories;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,11 +21,26 @@ public class AuthRepository {
         this.firebaseAuth = firebaseAuth;
     }
 
-    public FirebaseUser signIn(String email, String password) throws FirebaseAuthException {
-        try {
-            return firebaseAuth.signInWithEmailAndPassword(email, password).getResult().getUser();
-        } catch (Exception e) {
-            throw (FirebaseAuthException) e;
-        }
+
+    public LiveData<FirebaseUser> getCurrentUser() {
+        MutableLiveData<FirebaseUser> currentUser = new MutableLiveData<>();
+        currentUser.setValue(firebaseAuth.getCurrentUser());
+        return currentUser;
+    }
+
+    public Task<AuthResult> signIn(String email, String password) {
+        return firebaseAuth.signInWithEmailAndPassword(email, password);
+    }
+
+    public Task<AuthResult> createUserWithEmailAndPassword(String email, String password) {
+        return firebaseAuth.createUserWithEmailAndPassword(email, password);
+    }
+
+    public Task<Void> sendPasswordResetEmail(String email) {
+        return firebaseAuth.sendPasswordResetEmail(email);
+    }
+
+    public void signOut() {
+        firebaseAuth.signOut();
     }
 }

@@ -12,10 +12,10 @@ import com.example.buymyride.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ForgotPasswordFragment#newInstance} factory method to
+ * Use the {@link ForgotPassword#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ForgotPasswordFragment extends Fragment {
+public class ForgotPassword extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +26,7 @@ public class ForgotPasswordFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ForgotPasswordFragment() {
+    public ForgotPassword() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class ForgotPasswordFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ForgotPasswordFragment.
+     * @return A new instance of fragment ForgotPassword.
      */
     // TODO: Rename and change types and number of parameters
-    public static ForgotPasswordFragment newInstance(String param1, String param2) {
-        ForgotPasswordFragment fragment = new ForgotPasswordFragment();
+    public static ForgotPassword newInstance(String param1, String param2) {
+        ForgotPassword fragment = new ForgotPassword();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

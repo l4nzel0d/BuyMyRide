@@ -40,8 +40,18 @@ android {
 }
 
 dependencies {
+    val nav_version = "2.9.0"
+
+    // Views/Fragments integration
+    implementation("androidx.navigation:navigation-fragment:$nav_version")
+    implementation("androidx.navigation:navigation-ui:$nav_version")
+
+    // Feature module support for Fragments
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
     implementation(libs.hilt.android)
-    implementation(libs.androidx.navigation.runtime.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.google.flexbox)
     implementation(platform(libs.firebase.bom))

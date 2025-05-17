@@ -1,15 +1,10 @@
 package com.example.buymyride.ui.splash;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.ui.auth.AuthActivity;
@@ -22,29 +17,24 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
-public class SplashViewModel extends ViewModel {
+public class SplashViewModel {
     private final AuthRepository authRepository;
-    private final MutableLiveData<Class<? extends Activity>> destinationActivity = new MutableLiveData<>();
+    private final MutableLiveData<Class<?>> navigationEvent = new MutableLiveData<>();
 
-    public LiveData<Class<? extends Activity>> getDestinationActivity() {
-        return destinationActivity;
+    public LiveData<Class<?>> getNavigationEvent() {
+        return navigationEvent;
     }
 
     @Inject
     public SplashViewModel(AuthRepository authRepository) {
         this.authRepository = authRepository;
-        decideNavigation();
-    }
-
-
-    private void decideNavigation() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            FirebaseUser user = authRepository.getCurrentUser().getValue();
-            if (user != null) {
-                destinationActivity.postValue(MainActivity.class);
+            FirebaseUser currentUser = authRepository.getCurrentUser();
+            if (currentUser != null) {
+                navigationEvent.postValue(MainActivity.class);
             } else {
-                destinationActivity.postValue(AuthActivity.class);
+                navigationEvent.postValue(AuthActivity.class);
             }
-        }, 1_000);
+        }, 2000);
     }
 }

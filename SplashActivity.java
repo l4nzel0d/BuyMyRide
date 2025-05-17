@@ -21,30 +21,28 @@ import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
-@AndroidEntryPoint
 public class SplashActivity extends AppCompatActivity {
 
-    private SplashViewModel viewModel;
+    @Inject
+    SplashViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash_screen);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-        viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
-
-        splashScreen.setKeepOnScreenCondition(() ->
-                viewModel.getDestinationActivity().getValue() == null
-        );
-
-        viewModel.getDestinationActivity().observe(this, activityClass -> {
-            if (activityClass != null) {
-                startActivity(new Intent(this, activityClass));
-                finish();
-            }
+        viewModel.getNavigationEvent().observe(this, destinationClass -> {
+            Intent intent = new Intent(SplashActivity.this, destinationClass);
+            startActivity(intent);
+            finish();
         });
     }
 }
