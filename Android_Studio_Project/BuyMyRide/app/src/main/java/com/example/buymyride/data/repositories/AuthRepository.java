@@ -1,5 +1,7 @@
 package com.example.buymyride.data.repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -74,5 +76,18 @@ public class AuthRepository {
 
     public void signOut() {
         firebaseAuth.signOut();
+    }
+
+    public CompletableFuture<Result<Void>> resetPassword(String email) {
+        CompletableFuture<Result<Void>> future = new CompletableFuture<>();
+        firebaseAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        future.complete(Result.success(null)); // Use null for Void
+                    } else {
+                        future.complete(Result.error(new RuntimeException(task.getException().getMessage())));
+                    }
+                });
+        return future;
     }
 }

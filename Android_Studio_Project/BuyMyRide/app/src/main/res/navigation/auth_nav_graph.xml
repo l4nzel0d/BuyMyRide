@@ -6,11 +6,11 @@
     app:startDestination="@id/signInFragment">
     <fragment
         android:id="@+id/forgotPassword"
-        android:name="com.example.buymyride.ui.auth.ForgotPassword"
+        android:name="com.example.buymyride.ui.auth.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
         tools:layout="@layout/fragment_forgot_password" >
         <action
-            android:id="@+id/action_forgotPassword_to_signInFragment"
+            android:id="@+id/action_forgotPasswordFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
     </fragment>
     <fragment
