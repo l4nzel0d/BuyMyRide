@@ -40,6 +40,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.glide)
+
+
     val nav_version = "2.9.0"
 
     // Views/Fragments integration
