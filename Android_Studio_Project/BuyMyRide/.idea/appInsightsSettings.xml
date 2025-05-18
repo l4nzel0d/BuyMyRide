@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.buymyride" />
-                  <option name="mobileSdkAppId" value="1:285669562175:android:5fd245a05a93756f3a658a" />
-                  <option name="projectId" value="buymyride-sem4" />
-                  <option name="projectNumber" value="285669562175" />
+                  <option name="mobileSdkAppId" value="1:1097367059586:android:b2ea738571e6286345489b" />
+                  <option name="projectId" value="buymyride-sem4-25" />
+                  <option name="projectNumber" value="1097367059586" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

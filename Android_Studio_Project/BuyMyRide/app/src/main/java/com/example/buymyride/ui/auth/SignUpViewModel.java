@@ -4,7 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.buymyride.data.model.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
+import com.example.buymyride.data.repositories.UserRepository;
+import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Inject;
 
@@ -14,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class SignUpViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
+    private final UserRepository userRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
@@ -36,20 +40,30 @@ public class SignUpViewModel extends ViewModel {
     }
 
     @Inject
-    public SignUpViewModel(AuthRepository authRepository) {
+    public SignUpViewModel(AuthRepository authRepository, UserRepository userRepository) {
         this.authRepository = authRepository;
+        this.userRepository = userRepository;
     }
 
-    public void signUp(String email, String password) {
+    public void signUp(String name, String email, String phoneNumber, String password) {
         isLoading.setValue(true);
-        authRepository.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    isLoading.setValue(false);
-                    if (task.isSuccessful()) {
+        authRepository.signUp(email, password)
+                .thenAccept(result -> { // Changed from addOnCompleteListener
+                    if (result.isSuccessful()) {
+                        UserId userId = result.getData();  // Get UserId from result
+                        // For now, not storing name and phone, just navigating
                         navigateToMain.setValue(true);
+                        isLoading.setValue(false);
+
                     } else {
-                        errorMessage.setValue("Registration failed: " + task.getException().getMessage());
+                        isLoading.setValue(false);
+                        errorMessage.setValue("Registration failed: " + result.getException().getMessage());
                     }
+                })
+                .exceptionally(throwable -> {  // Handle exceptions
+                    isLoading.setValue(false);
+                    errorMessage.setValue("Registration failed: " + throwable.getMessage());
+                    return null; // Return null because exceptionally expects a return value
                 });
     }
 

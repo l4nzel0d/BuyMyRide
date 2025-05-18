@@ -2,6 +2,7 @@ package com.example.buymyride.di;
 
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import javax.inject.Singleton;
 
@@ -18,6 +19,12 @@ public class AppModule {
     @Singleton
     public FirebaseAuth provideFirebaseAuth() {
         return FirebaseAuth.getInstance();
+    }
+
+    @Provides
+    @Singleton
+    public FirebaseFirestore provideFirebaseFirestore() {
+        return FirebaseFirestore.getInstance();
     }
 
     @Provides

@@ -54,7 +54,7 @@ public class SignUpFragment extends Fragment {
 
             // Basic input validation (you might want more robust validation)
             if (!name.isEmpty() && !email.isEmpty() && !phone.isEmpty() && !password.isEmpty()) {
-                viewModel.signUp(email, password); // For simplicity, only registering with email and password
+                viewModel.signUp(name, email, phone, password); // For simplicity, only registering with email and password
             } else {
                 Snackbar.make(binding.getRoot(), "Пожалуйста, заполните все поля", Snackbar.LENGTH_SHORT).show();
             }

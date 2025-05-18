@@ -47,13 +47,18 @@ public class SignInViewModel extends ViewModel {
     public void signIn(String email, String password) {
         isLoading.setValue(true);
         authRepository.signIn(email, password)
-                .addOnCompleteListener(task -> {
+                .thenAccept(result -> {
                     isLoading.setValue(false);
-                    if (task.isSuccessful()) {
+                    if (result.isSuccessful()) {
                         navigateToMain.setValue(true);
                     } else {
-                        errorMessage.setValue("Sign-in failed: " + task.getException().getMessage());
+                        errorMessage.setValue("Sign-in failed: " + (result.getException() != null ? result.getException().getMessage() : "Unknown error"));
                     }
+                })
+                .exceptionally(throwable -> {
+                    isLoading.setValue(false);
+                    errorMessage.setValue("Sign-in failed: " + throwable.getMessage());
+                    return null; // Return null because exceptionally expects a return value
                 });
     }
 
