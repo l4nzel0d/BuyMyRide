@@ -1,12 +1,10 @@
 package com.example.buymyride.data.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.buymyride.data.model.Result;
-import com.example.buymyride.data.model.UserId;
+import com.example.buymyride.data.models.Result;
+import com.example.buymyride.data.models.UserId;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

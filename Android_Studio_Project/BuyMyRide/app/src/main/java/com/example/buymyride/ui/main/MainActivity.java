@@ -11,10 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.buymyride.R;
 import com.example.buymyride.ui.auth.AuthActivity;
 import com.example.buymyride.ui.splash.SplashActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -22,26 +27,21 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        firebaseAuth = FirebaseAuth.getInstance();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setContentView(R.layout.activity_main); // XML с nav_host_fragment
 
-        Button btnSignOut = findViewById(R.id.btn_sign_out);
-        btnSignOut.setOnClickListener(v -> {
-            firebaseAuth.signOut();
-            Intent intent = new Intent(MainActivity.this, SplashActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment); // ID должен совпадать
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
+            NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        } else {
+            throw new IllegalStateException("NavHostFragment not found");
+        }
     }
 }

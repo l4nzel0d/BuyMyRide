@@ -1,22 +1,17 @@
 package com.example.buymyride.ui.splash;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.buymyride.data.model.UserId;
+import com.example.buymyride.data.models.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.ui.auth.AuthActivity;
 import com.example.buymyride.ui.main.MainActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Inject;
 

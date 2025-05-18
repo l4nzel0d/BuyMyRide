@@ -1,6 +1,7 @@
 package com.example.buymyride.di;
 
 import com.example.buymyride.data.repositories.AuthRepository;
+import com.example.buymyride.data.repositories.MyUsersRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,5 +32,11 @@ public class AppModule {
     @Singleton
     public AuthRepository provideAuthRepository(FirebaseAuth firebaseAuth) {
         return new AuthRepository(firebaseAuth);
+    }
+
+    @Provides
+    @Singleton
+    public MyUsersRepository provideMyUsersRepository(FirebaseFirestore firebaseFirestore) {
+        return new MyUsersRepository(firebaseFirestore);
     }
 }

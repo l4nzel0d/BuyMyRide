@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.buymyride.data.model.MyUser;
-import com.example.buymyride.data.model.UserId;
+import com.example.buymyride.data.models.MyUser;
+import com.example.buymyride.data.models.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
 

@@ -1,6 +1,6 @@
 package com.example.buymyride.data.repositories;
 
-import com.example.buymyride.data.model.MyUser;
+import com.example.buymyride.data.models.MyUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;

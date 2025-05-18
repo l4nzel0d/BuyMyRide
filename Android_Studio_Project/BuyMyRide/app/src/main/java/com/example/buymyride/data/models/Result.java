@@ -1,4 +1,4 @@
-package com.example.buymyride.data.model;
+package com.example.buymyride.data.models;
 
 public class Result<T> {
     private final T data;

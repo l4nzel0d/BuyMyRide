@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/favorites_nav_graph"
+    app:startDestination="@id/favoritesFragment">
+
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.buymyride.ui.main.favorites.FavoritesFragment"
+        android:label="Favorites" />
+
+    <fragment
+        android:id="@+id/carDetailsFragment"
+        android:name="com.example.buymyride.ui.main.common.CarDetailsFragment"
+        android:label="Car Details" />
+
+</navigation>

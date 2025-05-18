@@ -1,4 +1,4 @@
-package com.example.buymyride.data.model;
+package com.example.buymyride.data.models;
 
 import java.util.List;
 
