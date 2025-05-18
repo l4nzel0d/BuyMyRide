@@ -11,11 +11,11 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
-public class SignInViewModel extends ViewModel {
+public class SignUpViewModel extends ViewModel {
+
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToSignUp = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToForgotPassword = new MutableLiveData<>();
+    private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
@@ -23,12 +23,8 @@ public class SignInViewModel extends ViewModel {
         return errorMessage;
     }
 
-    public LiveData<Boolean> getNavigateToSignUp() {
-        return navigateToSignUp;
-    }
-
-    public LiveData<Boolean> getNavigateToForgotPassword() {
-        return navigateToForgotPassword;
+    public LiveData<Boolean> getNavigateToSignIn() {
+        return navigateToSignIn;
     }
 
     public LiveData<Boolean> getNavigateToMain() {
@@ -40,28 +36,24 @@ public class SignInViewModel extends ViewModel {
     }
 
     @Inject
-    public SignInViewModel(AuthRepository authRepository) {
+    public SignUpViewModel(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
-    public void signIn(String email, String password) {
+    public void signUp(String email, String password) {
         isLoading.setValue(true);
-        authRepository.signIn(email, password)
+        authRepository.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     isLoading.setValue(false);
                     if (task.isSuccessful()) {
                         navigateToMain.setValue(true);
                     } else {
-                        errorMessage.setValue("Sign-in failed: " + task.getException().getMessage());
+                        errorMessage.setValue("Registration failed: " + task.getException().getMessage());
                     }
                 });
     }
 
-    public void navigateToSignUp() {
-        navigateToSignUp.setValue(true);
-    }
-
-    public void navigateToForgotPassword() {
-        navigateToForgotPassword.setValue(true);
+    public void navigateToSignIn() {
+        navigateToSignIn.setValue(true);
     }
 }

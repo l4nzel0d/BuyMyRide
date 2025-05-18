@@ -1,66 +1,107 @@
 package com.example.buymyride.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.buymyride.R;
+import com.example.buymyride.databinding.FragmentSignInBinding; // Import generated binding class
+import com.example.buymyride.ui.main.MainActivity;
+import com.google.android.material.snackbar.Snackbar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SignInFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public class SignInFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    SignInViewModel viewModel;
+    private NavController navController;
+    private FragmentSignInBinding binding; // Use View Binding
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public SignInFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SignInFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SignInFragment newInstance(String param1, String param2) {
-        SignInFragment fragment = new SignInFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentSignInBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
+
+        viewModel = new ViewModelProvider(this).get(SignInViewModel.class); // Get ViewModel instance
+
+        setListeners();
+        observeViewModel();
+    }
+
+    private void setListeners() {
+        binding.buttonSignIn.setOnClickListener(v -> {
+            String email = binding.inputEmail.getText().toString().trim();
+            String password = binding.inputPassword.getText().toString().trim();
+            if (!email.isEmpty() && !password.isEmpty()) {
+                viewModel.signIn(email, password);
+            } else {
+                Snackbar.make(binding.getRoot(), "Пожалуйста, введите email и пароль", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.textRegister.setOnClickListener(v -> {
+            viewModel.navigateToSignUp();
+        });
+
+        binding.textResetPassword.setOnClickListener(v -> {
+            viewModel.navigateToForgotPassword();
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null) {
+                Snackbar.make(binding.getRoot(), errorMessage, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.getNavigateToSignUp().observe(getViewLifecycleOwner(), navigate -> {
+            if (Boolean.TRUE.equals(navigate)) {
+                navController.navigate(R.id.action_signInFragment_to_signUpFragment);
+            }
+        });
+
+        viewModel.getNavigateToForgotPassword().observe(getViewLifecycleOwner(), navigate -> {
+            if (Boolean.TRUE.equals(navigate)) {
+                navController.navigate(R.id.action_signInFragment_to_forgotPassword);
+            }
+        });
+
+        viewModel.getNavigateToMain().observe(getViewLifecycleOwner(), navigate -> {
+            if (Boolean.TRUE.equals(navigate)) {
+                startActivity(new Intent(getContext(), MainActivity.class));
+                getActivity().finish();
+            }
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            // You might want to add a ProgressBar to your layout and control its visibility here
+            binding.buttonSignIn.setEnabled(!isLoading);
+        });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_in, container, false);
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null; // Important for memory management
     }
 }

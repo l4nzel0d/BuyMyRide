@@ -45,6 +45,6 @@ public class SplashViewModel extends ViewModel {
             } else {
                 destinationActivity.postValue(AuthActivity.class);
             }
-        }, 1_000);
+        }, 1);
     }
 }
