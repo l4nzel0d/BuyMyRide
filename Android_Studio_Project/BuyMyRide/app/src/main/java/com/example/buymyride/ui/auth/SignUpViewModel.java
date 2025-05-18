@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.buymyride.data.model.MyUser;
 import com.example.buymyride.data.model.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
-import com.example.buymyride.data.repositories.UserRepository;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.buymyride.data.repositories.MyUsersRepository;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -17,11 +20,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class SignUpViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
-    private final UserRepository userRepository;
+    private final MyUsersRepository myUsersRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private Executor executor = Executors.newSingleThreadExecutor();
+
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
@@ -40,30 +45,47 @@ public class SignUpViewModel extends ViewModel {
     }
 
     @Inject
-    public SignUpViewModel(AuthRepository authRepository, UserRepository userRepository) {
+    public SignUpViewModel(AuthRepository authRepository, MyUsersRepository myUsersRepository) {
         this.authRepository = authRepository;
-        this.userRepository = userRepository;
+        this.myUsersRepository = myUsersRepository;
     }
 
-    public void signUp(String name, String email, String phoneNumber, String password) {
+    public void signUp(final String name, final String email, final String phoneNumber, final String password) {
         isLoading.setValue(true);
-        authRepository.signUp(email, password)
-                .thenAccept(result -> { // Changed from addOnCompleteListener
-                    if (result.isSuccessful()) {
-                        UserId userId = result.getData();  // Get UserId from result
-                        // For now, not storing name and phone, just navigating
-                        navigateToMain.setValue(true);
-                        isLoading.setValue(false);
+        executor.execute(() -> {
+            createUser(name, email, phoneNumber, password);
+        });
+    }
 
+    private void createUser(final String name, final String email, final String phoneNumber, final String password) {
+        authRepository.signUp(email, password)
+                .thenAccept(result -> {
+                    if (result.isSuccessful()) {
+                        UserId userId = result.getData();
+                        MyUser myUser = new MyUser(userId, email, name, phoneNumber, null);
+                        saveUserInfo(myUser);
                     } else {
-                        isLoading.setValue(false);
-                        errorMessage.setValue("Registration failed: " + result.getException().getMessage());
+                        isLoading.postValue(false);
+                        errorMessage.postValue("Registration failed: " + result.getException().getMessage());
                     }
                 })
-                .exceptionally(throwable -> {  // Handle exceptions
-                    isLoading.setValue(false);
-                    errorMessage.setValue("Registration failed: " + throwable.getMessage());
-                    return null; // Return null because exceptionally expects a return value
+                .exceptionally(throwable -> {
+                    isLoading.postValue(false);
+                    errorMessage.postValue("Registration failed: " + throwable.getMessage());
+                    return null;
+                });
+    }
+
+    private void saveUserInfo(MyUser myUser) {
+        myUsersRepository.saveUserData(myUser)
+                .thenAccept(aVoid -> {
+                    isLoading.postValue(false);
+                    navigateToMain.postValue(true);
+                })
+                .exceptionally(throwable -> {
+                    isLoading.postValue(false);
+                    errorMessage.postValue("Failed to save user data: " + throwable.getMessage());
+                    return null;
                 });
     }
 
