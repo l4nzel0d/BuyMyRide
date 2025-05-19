@@ -8,7 +8,14 @@
         android:id="@+id/catalogText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="Catalog Fragment"
-        android:textSize="24sp"
-        android:layout_gravity="center" />
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btn_navigate_to_car_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="go to car details" />
 </FrameLayout>

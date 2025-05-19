@@ -6,7 +6,7 @@
     "imageUrl": "https://i.ibb.co/bRXqN7cJ/Audi-Q8-2024.jpg",
     "price": 14840000,
     "creditPrice": 192477,
-    "features": [
+    "specs": [
       {
         "Кузов": "Внедорожник 5 дв.",
         "КПП": "Автоматическая коробка",
@@ -26,7 +26,7 @@
     "imageUrl": "https://i.ibb.co/2124y89c/Audi-A4-2024.jpg",
     "price": 6000000,
     "creditPrice": 77820,
-    "features": [
+    "specs": [
       {
         "Кузов": "Седан",
         "КПП": "Коробка-робот",
@@ -46,7 +46,7 @@
     "imageUrl": "https://i.ibb.co/pr21dB2B/Ford-F-150-2023.jpg",
     "price": 16300000,
     "creditPrice": 211413,
-    "features": [
+    "specs": [
       {
         "Кузов": "Пикап",
         "КПП": "Автоматическая коробка",
@@ -66,7 +66,7 @@
     "imageUrl": "https://i.ibb.co/938HPwsp/MINI-Hatch-2021.jpg",
     "price": 3700000,
     "creditPrice": 48625,
-    "features": [
+    "specs": [
       {
         "Кузов": "Хэтчбек 3 дв.",
         "КПП": "Автоматическая коробка",
@@ -86,7 +86,7 @@
     "imageUrl": "https://i.ibb.co/9HNnS7FZ/Ford-Explorer-2019.jpg",
     "price": 3784000,
     "creditPrice": 50453,
-    "features": [
+    "specs": [
       {
         "Кузов": "Внедорожник 5 дв.",
         "КПП": "Автоматическая коробка",
@@ -106,7 +106,7 @@
     "imageUrl": "https://i.ibb.co/tp0JPxVH/Dodge-Challenger-2021.jpg",
     "price": 6120000,
     "creditPrice": 85602,
-    "features": [
+    "specs": [
       {
         "Кузов": "Купе",
         "КПП": "Автоматическая коробка",
@@ -126,7 +126,7 @@
     "imageUrl": "https://i.ibb.co/BHJGsgLv/Ford-Mustang-2019.jpg",
     "price": 3465000,
     "creditPrice": 45395,
-    "features": [
+    "specs": [
       {
         "Кузов": "Купе",
         "КПП": "Автоматическая коробка",
@@ -146,7 +146,7 @@
     "imageUrl": "https://i.ibb.co/N61LcW0g/Chevrolet-Camaro-2018.jpg",
     "price": 5500000,
     "creditPrice": 71984,
-    "features": [
+    "specs": [
       {
         "Кузов": "Купе",
         "КПП": "Автоматическая коробка",

@@ -2,8 +2,12 @@ package com.example.buymyride.data.repositories;
 
 import com.example.buymyride.data.models.MyUser;
 import com.example.buymyride.data.models.UserId;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +21,12 @@ import javax.inject.Singleton;
 public class MyUsersRepository {
 
     private final FirebaseFirestore firestore;
+    private final CollectionReference usersCollection;
 
     @Inject
     public MyUsersRepository(FirebaseFirestore firestore) {
         this.firestore = firestore;
+        this.usersCollection = firestore.collection("users");
     }
 
     public CompletableFuture<Void> saveUserData(MyUser myUser) {
@@ -30,7 +36,7 @@ public class MyUsersRepository {
         userData.put("name", myUser.getName());
         userData.put("phoneNumber", myUser.getPhoneNumber());
 
-        firestore.collection("users").document(myUser.getUserId().getUserId())
+        firestore.collection("users").document(myUser.getUserId().userId())
                 .set(userData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -45,7 +51,7 @@ public class MyUsersRepository {
     public CompletableFuture<MyUser> getUserData(UserId userId) {
         CompletableFuture<MyUser> future = new CompletableFuture<>();
 
-        firestore.collection("users").document(userId.getUserId())
+        firestore.collection("users").document(userId.userId())
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -65,6 +71,75 @@ public class MyUsersRepository {
                     }
                 });
 
+        return future;
+    }
+
+    public CompletableFuture<Void> addCarToFavorites(String userId, String carId) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        DocumentReference favCarRef = usersCollection.document(userId)
+                .collection("favoriteCars").document(carId);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("addedAt", FieldValue.serverTimestamp());
+
+        favCarRef.set(data, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        future.complete(null);
+                    } else {
+                        future.completeExceptionally(task.getException());
+                    }
+                });
+        return future;
+    }
+
+    public CompletableFuture<Void> removeCarFromFavorites(String userId, String carId) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        DocumentReference favCarRef = usersCollection.document(userId)
+                .collection("favoriteCars").document(carId);
+
+        favCarRef.delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        future.complete(null);
+                    } else {
+                        future.completeExceptionally(task.getException());
+                    }
+                });
+        return future;
+    }
+
+    public CompletableFuture<List<String>> getFavoriteCarIds(String userId) {
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+        CollectionReference favCarsRef = usersCollection.document(userId).collection("favoriteCars");
+
+        favCarsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<String> carIds = new java.util.ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    carIds.add(document.getId()); // The document ID is the carId
+                }
+                future.complete(carIds);
+            } else {
+                future.completeExceptionally(task.getException());
+            }
+        });
+        return future;
+    }
+
+    public CompletableFuture<Boolean> isCarInFavorites(String userId, String carId) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        DocumentReference favCarRef = usersCollection.document(userId)
+                .collection("favoriteCars").document(carId);
+
+        favCarRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                future.complete(document.exists()); //  returns true if the document exists, false otherwise
+            } else {
+                future.completeExceptionally(task.getException());
+            }
+        });
         return future;
     }
 }

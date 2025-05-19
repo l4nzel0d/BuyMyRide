@@ -26,7 +26,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private Button uploadButton;
 
-    // JSON-строка с данными об автомобилях (обновленная структура с "features")
+    // JSON-строка с данными об автомобилях (обновленная структура с "specs")
     private final String carJson = "[" +
             "  {" +
             "    \"make\": \"Audi\"," +
@@ -35,7 +35,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/bRXqN7cJ/Audi-Q8-2024.jpg\"," +
             "    \"price\": 14840000," +
             "    \"creditPrice\": 192477," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Внедорожник 5 дв.\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"340 л.с.\"}," +
@@ -53,7 +53,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/2124y89c/Audi-A4-2024.jpg\"," +
             "    \"price\": 6000000," +
             "    \"creditPrice\": 77820," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Седан\"}," +
             "      {\"КПП\": \"Коробка-робот\"}," +
             "      {\"Мощность\": \"190 л.с.\"}," +
@@ -71,7 +71,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/pr21dB2B/Ford-F-150-2023.jpg\"," +
             "    \"price\": 16300000," +
             "    \"creditPrice\": 211413," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Пикап\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"450 л.с.\"}," +
@@ -89,7 +89,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/938HPwsp/MINI-Hatch-2021.jpg\"," +
             "    \"price\": 3700000," +
             "    \"creditPrice\": 48625," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Хэтчбек 3 дв.\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"231 л.с.\"}," +
@@ -107,7 +107,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/9HNnS7FZ/Ford-Explorer-2019.jpg\"," +
             "    \"price\": 3784000," +
             "    \"creditPrice\": 50453," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Внедорожник 5 дв.\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"249 л.с.\"}," +
@@ -125,7 +125,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/tp0JPxVH/Dodge-Challenger-2021.jpg\"," +
             "    \"price\": 6120000," +
             "    \"creditPrice\": 85602," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Купе\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"492 л.с.\"}," +
@@ -143,7 +143,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/BHJGsgLv/Ford-Mustang-2019.jpg\"," +
             "    \"price\": 3465000," +
             "    \"creditPrice\": 45395," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Купе\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"317 л.с.\"}," +
@@ -161,7 +161,7 @@ public class FirestoreUploadActivity extends AppCompatActivity {
             "    \"imageUrl\": \"https://i.ibb.co/N61LcW0g/Chevrolet-Camaro-2018.jpg\"," +
             "    \"price\": 5500000," +
             "    \"creditPrice\": 71984," +
-            "    \"features\": [" +
+            "    \"specs\": [" +
             "      {\"Кузов\": \"Купе\"}," +
             "      {\"КПП\": \"Автоматическая коробка\"}," +
             "      {\"Мощность\": \"238 л.с.\"}," +
@@ -200,17 +200,17 @@ public class FirestoreUploadActivity extends AppCompatActivity {
                 carData.put("price", carJsonObject.getLong("price"));
                 carData.put("creditPrice", carJsonObject.getLong("creditPrice"));
 
-                // Извлекаем массив "features"
-                JSONArray featuresJsonArray = carJsonObject.getJSONArray("features");
-                List<Map<String, String>> featuresList = new ArrayList<>();
-                for (int j = 0; j < featuresJsonArray.length(); j++) {
-                    JSONObject featureJsonObject = featuresJsonArray.getJSONObject(j);
-                    // Предполагаем, что каждый объект в массиве features имеет только одну пару ключ-значение
-                    String key = featureJsonObject.keys().next();
-                    String value = featureJsonObject.getString(key);
-                    featuresList.add(Map.of(key, value));
+                // Извлекаем массив "specs"
+                JSONArray specsJsonArray = carJsonObject.getJSONArray("specs");
+                List<Map<String, String>> specsList = new ArrayList<>();
+                for (int j = 0; j < specsJsonArray.length(); j++) {
+                    JSONObject specJsonObject = specsJsonArray.getJSONObject(j);
+                    // Предполагаем, что каждый объект в массиве specs имеет только одну пару ключ-значение
+                    String key = specJsonObject.keys().next();
+                    String value = specJsonObject.getString(key);
+                    specsList.add(Map.of(key, value));
                 }
-                carData.put("features", featuresList);
+                carData.put("specs", specsList);
 
                 // Создаем новый документ в коллекции "cars" с автосгенерированным ID.
                 com.google.firebase.firestore.DocumentReference carRef = db.collection("cars").document();

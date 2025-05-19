@@ -30,7 +30,7 @@ public class SpecItemAdapter extends RecyclerView.Adapter<SpecItemAdapter.SpecIt
     @Override
     public void onBindViewHolder(@NonNull SpecItemViewHolder holder, int position) {
         SpecItem item = specItems.get(position);
-        holder.specValueTextView.setText(item.specName());
+        holder.specNameTextView.setText(item.specName());
         holder.specValueTextView.setText(item.specValue());
     }
 
