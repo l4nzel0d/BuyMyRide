@@ -9,7 +9,9 @@ import androidx.lifecycle.viewmodel.CreationExtras;
 
 import com.example.buymyride.data.models.Car;
 import com.example.buymyride.data.models.SpecItem;
+import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.CarsRepository;
+import com.example.buymyride.data.repositories.MyUsersRepository;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +25,8 @@ public class CarDetailsViewModel extends ViewModel {
     private MutableLiveData<Car> car = new MutableLiveData<>();
     private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>(false); // Use LiveData for isFavorite
     private CarsRepository carsRepository;  // Use the injected repository
+    private MyUsersRepository myUsersRepository; // Add MyUsersRepository
+    private AuthRepository authRepository;  // Add AuthRepository
 
     private String carId; // Hold the car ID.  Crucial for fetching.
 
@@ -30,27 +34,33 @@ public class CarDetailsViewModel extends ViewModel {
     public static class Factory implements ViewModelProvider.Factory {
         private final String carId;
         private final CarsRepository carsRepository;
+        private final MyUsersRepository myUsersRepository; // Add to Factory
+        private final AuthRepository authRepository;  // Add AuthRepository
 
-        public Factory(String carId, CarsRepository carsRepository) {
+        public Factory(String carId, CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
             this.carId = carId;
             this.carsRepository = carsRepository;
+            this.myUsersRepository = myUsersRepository;
+            this.authRepository = authRepository;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass, @NonNull CreationExtras extras) {
             if (modelClass.isAssignableFrom(CarDetailsViewModel.class)) {
-                return (T) new CarDetailsViewModel(carId, carsRepository);
+                return (T) new CarDetailsViewModel(carId, carsRepository, myUsersRepository, authRepository);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }
     }
 
-    // Constructor now takes carId and CarsRepository
-    public CarDetailsViewModel(String carId, CarsRepository carsRepository) {
+    public CarDetailsViewModel(String carId, CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) { // Add to Constructor
         this.carId = carId;
         this.carsRepository = carsRepository;
-        loadCarDetails(); // Load car details immediately upon creation.
+        this.myUsersRepository = myUsersRepository;
+        this.authRepository = authRepository;
+        loadCarDetails();
+        checkFavoriteStatus(); // Check the favorite status when the ViewModel is created
     }
 
     public LiveData<Car> getCar() {
@@ -62,8 +72,32 @@ public class CarDetailsViewModel extends ViewModel {
     }
 
     public void toggleFavorite() {
-        isFavorite.setValue(!isFavorite.getValue());
-        // In a real app, you'd update the database here.  Use a Repository method.
+        String userId = authRepository.getCurrentUserId().getValue(); // Get user ID
+        if (userId != null) {
+            if (isFavorite.getValue()) {
+                // Remove from favorites
+                myUsersRepository.removeCarFromFavorites(userId, carId)
+                        .thenAccept(aVoid -> {
+                            isFavorite.postValue(false); // Update LiveData
+                        })
+                        .exceptionally(throwable -> {
+                            // Handle error (e.g., show a toast)
+                            return null;
+                        });
+            } else {
+                // Add to favorites
+                myUsersRepository.addCarToFavorites(userId, carId)
+                        .thenAccept(aVoid -> {
+                            isFavorite.postValue(true); // Update LiveData
+                        })
+                        .exceptionally(throwable -> {
+                            // Handle error
+                            return null;
+                        });
+            }
+        } else {
+            // Handle the case where the user is not logged in (e.g., show a message)
+        }
     }
 
     private void loadCarDetails() {
@@ -79,7 +113,21 @@ public class CarDetailsViewModel extends ViewModel {
         });
     }
 
-    public Car getCarDetails() {
-        return car.getValue();
+    private void checkFavoriteStatus() {
+        String userId = authRepository.getCurrentUserId().getValue(); // Get User ID
+        if (userId != null) {
+            myUsersRepository.isCarInFavorites(userId, carId)
+                    .thenAccept(result -> {
+                        isFavorite.postValue(result);
+                    })
+                    .exceptionally(throwable -> {
+                        // Handle error, default to false
+                        isFavorite.postValue(false);
+                        return null;
+                    });
+        } else {
+            // User not logged in, default to false
+            isFavorite.postValue(false);
+        }
     }
 }

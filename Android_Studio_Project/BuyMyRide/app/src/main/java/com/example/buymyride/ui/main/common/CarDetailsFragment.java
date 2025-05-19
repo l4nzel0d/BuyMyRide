@@ -16,10 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.buymyride.data.models.Car;
+import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.CarsRepository;
+import com.example.buymyride.data.repositories.MyUsersRepository;
 import com.example.buymyride.databinding.FragmentCarDetailsBinding;
 import com.example.buymyride.ui.adapters.SpecItemAdapter;
 import com.example.buymyride.R;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -32,6 +35,10 @@ public class CarDetailsFragment extends Fragment {
     private String carId;
     @Inject
     CarsRepository carsRepository;
+    @Inject
+    MyUsersRepository myUsersRepository;
+    @Inject
+    AuthRepository authRepository;
     private MenuItem favoriteMenuItem;
 
     public CarDetailsFragment() {
@@ -57,7 +64,7 @@ public class CarDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        CarDetailsViewModel.Factory factory = new CarDetailsViewModel.Factory(carId, carsRepository);
+        CarDetailsViewModel.Factory factory = new CarDetailsViewModel.Factory(carId, carsRepository, myUsersRepository, authRepository);
         viewModel = new ViewModelProvider(this, factory).get(CarDetailsViewModel.class);
 
         // Set up RecyclerView for specs
@@ -74,7 +81,9 @@ public class CarDetailsFragment extends Fragment {
 
         viewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFavorite -> {
             if (favoriteMenuItem != null) {
-                favoriteMenuItem.setChecked(isFavorite);
+                favoriteMenuItem.setIcon(isFavorite
+                        ? R.drawable.ic_favorites_filled
+                        : R.drawable.ic_favorites);
             }
         });
 
@@ -87,7 +96,7 @@ public class CarDetailsFragment extends Fragment {
         });
 
 
-        binding.topAppBar.setOnClickListener(v -> {
+        binding.topAppBar.setNavigationOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
 
