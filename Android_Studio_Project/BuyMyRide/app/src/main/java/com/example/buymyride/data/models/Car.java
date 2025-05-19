@@ -1,5 +1,8 @@
 package com.example.buymyride.data.models;
 
+import java.util.List;
+import java.util.Map;
+
 public record Car(
         String id,
         String imageUrl,
@@ -8,12 +11,6 @@ public record Car(
         int year,
         long price,
         long creditPrice,
-        String bodyStyle,
-        String transmission,
-        String power,
-        String engineDisplacement,
-        String engineType,
-        String drive,
-        String exteriorColor,
-        String steeringWheel
-) {}
+        List<Map<String, String>> features
+) {
+}
