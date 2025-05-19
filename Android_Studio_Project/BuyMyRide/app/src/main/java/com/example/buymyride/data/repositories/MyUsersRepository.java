@@ -1,13 +1,18 @@
 package com.example.buymyride.data.repositories;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.buymyride.data.models.MyUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +26,7 @@ public class MyUsersRepository {
 
     private final FirebaseFirestore firestore;
     private final CollectionReference usersCollection;
+    private static final String TAG = "MyUsersRepository";
 
     @Inject
     public MyUsersRepository(FirebaseFirestore firestore) {
@@ -107,13 +113,34 @@ public class MyUsersRepository {
         return future;
     }
 
+    public LiveData<List<String>> getFavoriteCarIdsLiveData(String userId) {
+        MutableLiveData<List<String>> favoriteCarIdsLiveData = new MutableLiveData<>();
+        usersCollection.document(userId).collection("favoriteCars")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        android.util.Log.e(TAG, "Listen failed.", error);
+                        favoriteCarIdsLiveData.setValue(null); // Or handle error appropriately
+                        return;
+                    }
+
+                    List<String> favoriteIds = new ArrayList<>();
+                    if (value != null) {
+                        for (QueryDocumentSnapshot doc : value) {
+                            favoriteIds.add(doc.getId()); // The document ID is the carId
+                        }
+                    }
+                    favoriteCarIdsLiveData.setValue(favoriteIds);
+                });
+        return favoriteCarIdsLiveData;
+    }
+
     public CompletableFuture<List<String>> getFavoriteCarIds(String userId) {
         CompletableFuture<List<String>> future = new CompletableFuture<>();
         CollectionReference favCarsRef = usersCollection.document(userId).collection("favoriteCars");
 
         favCarsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                List<String> carIds = new java.util.ArrayList<>();
+                List<String> carIds = new ArrayList<>();
                 for (DocumentSnapshot document : task.getResult()) {
                     carIds.add(document.getId()); // The document ID is the carId
                 }
@@ -124,6 +151,7 @@ public class MyUsersRepository {
         });
         return future;
     }
+
 
     public CompletableFuture<Boolean> isCarInFavorites(String userId, String carId) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
