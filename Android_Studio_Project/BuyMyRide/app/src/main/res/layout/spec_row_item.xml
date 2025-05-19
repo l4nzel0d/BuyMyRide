@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:paddingVertical="4dp"
+    android:layout_height="wrap_content" > 
+    
+    <TextView
+        android:layout_width="144dp"
+        android:id="@+id/text_spec_name"
+        android:layout_height="wrap_content"
+        android:text="Объём двигателя"
+        style="@style/M3_Body_Large"
+        android:textColor="#7D7D7D"
+        />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/text_spec_value"
+        android:layout_height="wrap_content"
+        style="@style/M3_Body_Large"
+        android:text="3.0. л."
+        android:textColor="@color/black" />
+
+
+</LinearLayout>
