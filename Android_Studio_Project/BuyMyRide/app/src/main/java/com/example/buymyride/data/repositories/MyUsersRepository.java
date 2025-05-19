@@ -1,7 +1,6 @@
 package com.example.buymyride.data.repositories;
 
 import com.example.buymyride.data.models.MyUser;
-import com.example.buymyride.data.models.UserId;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,11 +31,11 @@ public class MyUsersRepository {
     public CompletableFuture<Void> saveUserData(MyUser myUser) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         Map<String, Object> userData = new HashMap<>();
-        userData.put("email", myUser.getEmail());
-        userData.put("name", myUser.getName());
-        userData.put("phoneNumber", myUser.getPhoneNumber());
+        userData.put("email", myUser.email());
+        userData.put("name", myUser.name());
+        userData.put("phoneNumber", myUser.phoneNumber());
 
-        firestore.collection("users").document(myUser.getUserId().userId())
+        firestore.collection("users").document(myUser.userId())
                 .set(userData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -48,10 +47,10 @@ public class MyUsersRepository {
         return future;
     }
 
-    public CompletableFuture<MyUser> getUserData(UserId userId) {
+    public CompletableFuture<MyUser> getUserData(String userId) {
         CompletableFuture<MyUser> future = new CompletableFuture<>();
 
-        firestore.collection("users").document(userId.userId())
+        firestore.collection("users").document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -60,8 +59,7 @@ public class MyUsersRepository {
                             String email = document.getString("email");
                             String name = document.getString("name");
                             String phoneNumber = document.getString("phoneNumber");
-                            List<String> favoriteCarIds = (List<String>) document.get("favoriteCarIds");
-                            MyUser myUser = new MyUser(userId, email, name, phoneNumber, favoriteCarIds != null ? favoriteCarIds : List.of());
+                            MyUser myUser = new MyUser(userId, email, name, phoneNumber);
                             future.complete(myUser);
                         } else {
                             future.complete(null); // User data not found

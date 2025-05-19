@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.buymyride.data.models.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
 
@@ -80,15 +79,15 @@ public class ProfileViewModel extends ViewModel {
         });
     }
 
-    private void fetchUserData(UserId userId) {
+    private void fetchUserData(String userId) {
         ioExecutor.execute(() -> {
             myUsersRepository.getUserData(userId)
                     .thenAccept(user -> {
                         mainThreadHandler.post(() -> {
                             if (user != null) {
-                                _name.setValue(user.getName());
-                                _email.setValue(user.getEmail());
-                                _phone.setValue(user.getPhoneNumber());
+                                _name.setValue(user.name());
+                                _email.setValue(user.email());
+                                _phone.setValue(user.phoneNumber());
                             } else {
                                 _errorMessage.setValue("User data not found.");
                             }

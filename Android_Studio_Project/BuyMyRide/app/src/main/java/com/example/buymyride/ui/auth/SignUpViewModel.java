@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.buymyride.data.models.MyUser;
-import com.example.buymyride.data.models.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
 
@@ -61,8 +60,8 @@ public class SignUpViewModel extends ViewModel {
         authRepository.signUp(email, password)
                 .thenAccept(result -> {
                     if (result.isSuccessful()) {
-                        UserId userId = result.getData();
-                        MyUser myUser = new MyUser(userId, email, name, phoneNumber, null);
+                        String userId = result.getData();
+                        MyUser myUser = new MyUser(userId, email, name, phoneNumber);
                         saveUserInfo(myUser);
                     } else {
                         isLoading.postValue(false);

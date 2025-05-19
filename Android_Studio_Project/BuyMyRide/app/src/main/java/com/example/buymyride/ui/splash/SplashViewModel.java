@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.buymyride.data.models.UserId;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.ui.auth.AuthActivity;
 import com.example.buymyride.ui.main.MainActivity;
@@ -35,7 +34,7 @@ public class SplashViewModel extends ViewModel {
 
     private void decideNavigation() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            UserId userId = authRepository.getCurrentUserId().getValue();
+            String userId = authRepository.getCurrentUserId().getValue();
 
             if (userId != null) {
                 destinationActivity.setValue(MainActivity.class);
