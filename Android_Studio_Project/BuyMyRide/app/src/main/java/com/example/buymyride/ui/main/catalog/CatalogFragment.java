@@ -35,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CatalogFragment extends Fragment {
-
+    private Menu toolbarMenu;
     private static final String TAG = "CatalogFragment"; // Define a TAG for logging
 
     private FragmentCatalogBinding binding;
@@ -73,44 +73,56 @@ public class CatalogFragment extends Fragment {
         navController = Navigation.findNavController(view);
         Log.d(TAG, "onViewCreated: NavController initialized.");
 
-        setupToolbar(); // New method to set up the toolbar and its menu
         setupRecyclerView();
         setupViewModel();
+        setupToolbar(); // New method to set up the toolbar and its menu
+
         observeViewModel();
     }
 
+    private boolean handleSortMenuItem(MenuItem item) {
+        viewModel.onSortOptionSelected(item.getItemId());
+        item.setChecked(true);
+        return true;
+    }
+
     private void setupToolbar() {
-        MaterialToolbar toolbar = binding.toolbar; // Access toolbar via binding
+        MaterialToolbar toolbar = binding.catalogToolbar;
+        toolbar.setOnMenuItemClickListener(item -> handleSortMenuItem(item));
 
-        toolbar.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-            String sortPreference = "";
 
-            if (id == R.id.sort_by_ascending_price) {
-                sortPreference = "price_asc";
-            } else if (id == R.id.sort_by_descending_price) {
-                sortPreference = "price_desc";
-            } else if (id == R.id.sort_by_newest) {
-                sortPreference = "year_desc";
-            } else if (id == R.id.sort_by_oldest) {
-                sortPreference = "year_asc";
+        toolbarMenu = toolbar.getMenu();
+
+        // Observe sortPreference to update checked menu item
+        viewModel.getSortPreference().observe(getViewLifecycleOwner(), sortPref -> {
+            if (toolbarMenu == null) return;
+
+
+            // Check the correct menu item according to the current sortPreference
+            int menuItemId = mapSortPreferenceToMenuId(sortPref);
+            MenuItem itemToCheck = toolbarMenu.findItem(menuItemId);
+            if (itemToCheck != null) {
+                itemToCheck.setChecked(true);
             }
-
-            if (!sortPreference.isEmpty()) {
-                item.setChecked(true); // Mark the selected item as checked
-                viewModel.setSortPreference(sortPreference);
-                Log.d(TAG, "onMenuItemClick: Sort preference set to: " + sortPreference);
-                return true; // Consume the event
-            }
-
-            Log.d(TAG, "onMenuItemClick: Unhandled menu item ID: " + id);
-            return false; // Let it propagate if not handled here
         });
 
-        Log.d(TAG, "setupToolbar: Toolbar menu listener set.");
+        Log.d(TAG, "setupToolbar: Toolbar menu listener set and sortPreference observer attached.");
     }
 
 
+    private int mapSortPreferenceToMenuId(String sortPref) {
+        if ("price_asc".equals(sortPref)) {
+            return R.id.sort_by_ascending_price;
+        } else if ("price_desc".equals(sortPref)) {
+            return R.id.sort_by_descending_price;
+        } else if ("year_asc".equals(sortPref)) {
+            return R.id.sort_by_oldest;
+        } else if ("year_desc".equals(sortPref)) {
+            return R.id.sort_by_newest;
+        } else {
+            return -1; // or some default menu item id if needed
+        }
+    }
 
     private void setupRecyclerView() {
         carCardAdapter = new CarCardAdapter(requireContext(), new CarCardAdapter.OnItemClickListener() {

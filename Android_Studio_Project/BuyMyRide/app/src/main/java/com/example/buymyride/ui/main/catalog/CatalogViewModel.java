@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.CreationExtras;
 
+import com.example.buymyride.R;
 import com.example.buymyride.data.models.Car;
 import com.example.buymyride.data.models.CarCardModel;
 import com.example.buymyride.data.repositories.AuthRepository;
@@ -23,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class CatalogViewModel extends ViewModel {
 
     private LiveData<List<Car>> allCarsLiveData;
-    private MutableLiveData<String> sortPreference = new MutableLiveData<>("none");
+    private MutableLiveData<String> sortPreference = new MutableLiveData<>("year_desc");
     private MediatorLiveData<List<CarCardModel>> carsForDisplay = new MediatorLiveData<>(); // Use MediatorLiveData
     private LiveData<Integer> numberOfCars;
     private CarsRepository carsRepository;
@@ -137,9 +138,30 @@ public class CatalogViewModel extends ViewModel {
         return numberOfCars;
     }
 
-    // Method to update the sort preference
-    public void setSortPreference(String sortPreference) {
-        this.sortPreference.setValue(sortPreference);
+    public LiveData<String> getSortPreference() {
+        return this.sortPreference;
+    }
+
+    // Instead of exposing setSortPreference, expose this:
+    public void onSortOptionSelected(int menuItemId) {
+        String sortPreferenceFromMenuId = mapMenuIdToSortPreference(menuItemId);
+        if (!sortPreferenceFromMenuId.equals(sortPreference.getValue())) {
+            sortPreference.setValue(sortPreferenceFromMenuId);
+        }
+    }
+
+    private String mapMenuIdToSortPreference(int menuItemId) {
+        if (menuItemId == R.id.sort_by_ascending_price) {
+            return "price_asc";
+        } else if (menuItemId == R.id.sort_by_descending_price) {
+            return "price_desc";
+        } else if (menuItemId == R.id.sort_by_newest) {
+            return "year_desc";
+        } else if (menuItemId == R.id.sort_by_oldest) {
+            return "year_asc";
+        } else {
+            return sortPreference.getValue() != null ? sortPreference.getValue() : "year_desc";
+        }
     }
 
     // Helper method to sort the list of cars
