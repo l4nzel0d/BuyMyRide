@@ -151,13 +151,13 @@ public class CatalogViewModel extends ViewModel {
     }
 
     private String mapMenuIdToSortPreference(int menuItemId) {
-        if (menuItemId == R.id.sort_by_ascending_price) {
+        if (menuItemId == R.id.sort_by_price_asc) {
             return "price_asc";
-        } else if (menuItemId == R.id.sort_by_descending_price) {
+        } else if (menuItemId == R.id.sort_by_price_desc) {
             return "price_desc";
-        } else if (menuItemId == R.id.sort_by_newest) {
+        } else if (menuItemId == R.id.sort_by_year_desc) {
             return "year_desc";
-        } else if (menuItemId == R.id.sort_by_oldest) {
+        } else if (menuItemId == R.id.sort_by_year_asc) {
             return "year_asc";
         } else {
             return sortPreference.getValue() != null ? sortPreference.getValue() : "year_desc";

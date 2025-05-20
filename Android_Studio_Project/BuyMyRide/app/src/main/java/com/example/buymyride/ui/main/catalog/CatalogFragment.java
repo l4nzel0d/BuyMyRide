@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log; // Import Log class
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager; // Reverted to LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.buymyride.R;
 import com.example.buymyride.data.models.CarCardModel;
@@ -112,13 +110,13 @@ public class CatalogFragment extends Fragment {
 
     private int mapSortPreferenceToMenuId(String sortPref) {
         if ("price_asc".equals(sortPref)) {
-            return R.id.sort_by_ascending_price;
+            return R.id.sort_by_price_asc;
         } else if ("price_desc".equals(sortPref)) {
-            return R.id.sort_by_descending_price;
+            return R.id.sort_by_price_desc;
         } else if ("year_asc".equals(sortPref)) {
-            return R.id.sort_by_oldest;
+            return R.id.sort_by_year_asc;
         } else if ("year_desc".equals(sortPref)) {
-            return R.id.sort_by_newest;
+            return R.id.sort_by_year_desc;
         } else {
             return -1; // or some default menu item id if needed
         }

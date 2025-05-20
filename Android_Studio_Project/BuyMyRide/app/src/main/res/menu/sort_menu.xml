@@ -12,16 +12,16 @@
                 android:id="@+id/sort_group"
                 android:checkableBehavior="single">
                 <item
-                    android:id="@+id/sort_by_ascending_price"
+                    android:id="@+id/sort_by_price_asc"
                     android:title="По возрастанию цены" />
                 <item
-                    android:id="@+id/sort_by_descending_price"
+                    android:id="@+id/sort_by_price_desc"
                     android:title="По убыванию цены" />
                 <item
-                    android:id="@+id/sort_by_newest"
+                    android:id="@+id/sort_by_year_desc"
                     android:title="Сначала новее" />
                 <item
-                    android:id="@+id/sort_by_oldest"
+                    android:id="@+id/sort_by_year_asc"
                     android:title="Сначала старше" />
             </group>
         </menu>
