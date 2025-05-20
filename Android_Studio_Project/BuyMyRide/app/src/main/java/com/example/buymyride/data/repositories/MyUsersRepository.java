@@ -134,25 +134,6 @@ public class MyUsersRepository {
         return favoriteCarIdsLiveData;
     }
 
-    public CompletableFuture<List<String>> getFavoriteCarIds(String userId) {
-        CompletableFuture<List<String>> future = new CompletableFuture<>();
-        CollectionReference favCarsRef = usersCollection.document(userId).collection("favoriteCars");
-
-        favCarsRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<String> carIds = new ArrayList<>();
-                for (DocumentSnapshot document : task.getResult()) {
-                    carIds.add(document.getId()); // The document ID is the carId
-                }
-                future.complete(carIds);
-            } else {
-                future.completeExceptionally(task.getException());
-            }
-        });
-        return future;
-    }
-
-
     public CompletableFuture<Boolean> isCarInFavorites(String userId, String carId) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         DocumentReference favCarRef = usersCollection.document(userId)
