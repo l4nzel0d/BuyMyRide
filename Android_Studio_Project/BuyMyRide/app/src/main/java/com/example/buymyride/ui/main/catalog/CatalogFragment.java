@@ -82,10 +82,10 @@ public class CatalogFragment extends Fragment {
     private void setupToolbar() {
         MaterialToolbar toolbar = binding.toolbar; // Access toolbar via binding
 
-
         toolbar.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             String sortPreference = "";
+
             if (id == R.id.sort_by_ascending_price) {
                 sortPreference = "price_asc";
             } else if (id == R.id.sort_by_descending_price) {
@@ -97,15 +97,19 @@ public class CatalogFragment extends Fragment {
             }
 
             if (!sortPreference.isEmpty()) {
+                item.setChecked(true); // Mark the selected item as checked
                 viewModel.setSortPreference(sortPreference);
                 Log.d(TAG, "onMenuItemClick: Sort preference set to: " + sortPreference);
                 return true; // Consume the event
             }
+
             Log.d(TAG, "onMenuItemClick: Unhandled menu item ID: " + id);
             return false; // Let it propagate if not handled here
         });
+
         Log.d(TAG, "setupToolbar: Toolbar menu listener set.");
     }
+
 
 
     private void setupRecyclerView() {
