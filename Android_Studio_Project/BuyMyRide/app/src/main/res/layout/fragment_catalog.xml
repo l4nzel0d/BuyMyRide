@@ -61,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/text_number_of_offers"
                 android:text="8 предложений"
-                style="@style/M3_Body_LargeEmphasized"
+                style="@style/M3_Body_Large"
+                android:textSize="22dp"
                 android:textColor="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
