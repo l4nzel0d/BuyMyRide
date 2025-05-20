@@ -52,7 +52,7 @@ public class CarCardAdapter extends RecyclerView.Adapter<CarCardAdapter.CarViewH
                 .load(carCardModel.getImageUrl())
                 .into(holder.carImage);
 
-        holder.imageFavorite.setImageResource(carCardModel.isFavorite() ? R.drawable.ic_favorites_filled : R.drawable.ic_favorites);
+        holder.imageFavorite.setSelected(carCardModel.isFavorite());
 
         holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(position)); // Pass position
         holder.imageFavorite.setOnClickListener(v -> itemClickListener.onFavoriteClick(position)); // Pass position

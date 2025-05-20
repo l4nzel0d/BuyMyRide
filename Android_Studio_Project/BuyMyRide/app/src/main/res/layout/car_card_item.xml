@@ -105,8 +105,8 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:scaleType="center"
-                    android:src="@drawable/ic_favorites"
-                    app:tint="@color/black" />
+                    android:src="@drawable/favorite_icon_selector"
+                    app:tint="@color/favorite_tint_selector" />
 
 
             </com.google.android.flexbox.FlexboxLayout>
