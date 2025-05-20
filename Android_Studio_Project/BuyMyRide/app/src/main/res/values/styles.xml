@@ -20,6 +20,18 @@
         <item name="android:paddingBottom">16dp</item>
         <item name="cornerRadius">16dp</item>
     </style>
+
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorSurfaceContainer">#FFE0E1</item>
+        <item name="colorOnSecondaryContainer">#FDDEDF</item>
+        <item name="colorOnSurface">#6A0606</item>
+        <item name="colorSecondaryContainer">#6A0606</item>
+        <item name="colorOnSurfaceVariant">#490404</item>
+    </style>
 </resources>
 
 
