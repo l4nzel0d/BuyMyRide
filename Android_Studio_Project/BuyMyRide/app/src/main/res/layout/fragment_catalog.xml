@@ -68,7 +68,6 @@
                 android:id="@+id/recycler_view_cars"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingHorizontal="-8dp"
                 android:layout_gravity="center_horizontal"
                 tools:listitem="@layout/car_card_item" />
 
