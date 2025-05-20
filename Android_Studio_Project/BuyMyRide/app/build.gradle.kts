@@ -45,17 +45,15 @@ dependencies {
     implementation(libs.glide)
 
 
-    val nav_version = "2.9.0"
-
     // Views/Fragments integration
-    implementation("androidx.navigation:navigation-fragment:$nav_version")
-    implementation("androidx.navigation:navigation-ui:$nav_version")
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
 
     // Feature module support for Fragments
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+    implementation(libs.navigation.dynamic.features.fragment)
 
     // Testing Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+    androidTestImplementation(libs.androidx.navigation.testing)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.google.flexbox)
