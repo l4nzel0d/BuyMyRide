@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -115,7 +116,10 @@ public class MyUsersRepository {
 
     public LiveData<List<String>> getFavoriteCarIdsLiveData(String userId) {
         MutableLiveData<List<String>> favoriteCarIdsLiveData = new MutableLiveData<>();
-        usersCollection.document(userId).collection("favoriteCars")
+
+        usersCollection.document(userId)
+                .collection("favoriteCars")
+                .orderBy("addedAt", Query.Direction.DESCENDING) // Sort by addedAt
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         android.util.Log.e(TAG, "Listen failed.", error);
@@ -131,8 +135,10 @@ public class MyUsersRepository {
                     }
                     favoriteCarIdsLiveData.setValue(favoriteIds);
                 });
+
         return favoriteCarIdsLiveData;
     }
+
 
     public CompletableFuture<Boolean> isCarInFavorites(String userId, String carId) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
