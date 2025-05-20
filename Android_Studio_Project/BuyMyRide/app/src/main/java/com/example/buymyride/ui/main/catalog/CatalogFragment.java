@@ -80,7 +80,6 @@ public class CatalogFragment extends Fragment {
 
     private boolean handleSortMenuItem(MenuItem item) {
         viewModel.onSortOptionSelected(item.getItemId());
-        item.setChecked(true);
         return true;
     }
 
@@ -92,12 +91,12 @@ public class CatalogFragment extends Fragment {
         toolbarMenu = toolbar.getMenu();
 
         // Observe sortPreference to update checked menu item
-        viewModel.getSortPreference().observe(getViewLifecycleOwner(), sortPref -> {
-            if (toolbarMenu == null) return;
+        viewModel.getSortOption().observe(getViewLifecycleOwner(), sortOption -> {
+            if (toolbarMenu == null || sortOption == null) return;
 
 
             // Check the correct menu item according to the current sortPreference
-            int menuItemId = mapSortPreferenceToMenuId(sortPref);
+            int menuItemId = sortOption.getMenuItemId();
             MenuItem itemToCheck = toolbarMenu.findItem(menuItemId);
             if (itemToCheck != null) {
                 itemToCheck.setChecked(true);
@@ -107,20 +106,6 @@ public class CatalogFragment extends Fragment {
         Log.d(TAG, "setupToolbar: Toolbar menu listener set and sortPreference observer attached.");
     }
 
-
-    private int mapSortPreferenceToMenuId(String sortPref) {
-        if ("price_asc".equals(sortPref)) {
-            return R.id.sort_by_price_asc;
-        } else if ("price_desc".equals(sortPref)) {
-            return R.id.sort_by_price_desc;
-        } else if ("year_asc".equals(sortPref)) {
-            return R.id.sort_by_year_asc;
-        } else if ("year_desc".equals(sortPref)) {
-            return R.id.sort_by_year_desc;
-        } else {
-            return -1; // or some default menu item id if needed
-        }
-    }
 
     private void setupRecyclerView() {
         carCardAdapter = new CarCardAdapter(requireContext(), new CarCardAdapter.OnItemClickListener() {

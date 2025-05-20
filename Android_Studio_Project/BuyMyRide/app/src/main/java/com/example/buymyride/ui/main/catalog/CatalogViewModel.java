@@ -9,13 +9,12 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.CreationExtras;
 
-import com.example.buymyride.R;
 import com.example.buymyride.data.models.Car;
 import com.example.buymyride.data.models.CarCardModel;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.CarsRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
-import com.example.buymyride.util.CarSortUtils;
+import com.example.buymyride.util.SortOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 public class CatalogViewModel extends ViewModel {
 
     private LiveData<List<Car>> allCarsLiveData;
-    private MutableLiveData<String> sortPreference = new MutableLiveData<>("year_desc");
+    private MutableLiveData<SortOption> sortOption = new MutableLiveData<>(SortOption.YEAR_DESC);
     private MediatorLiveData<List<CarCardModel>> carsForDisplay = new MediatorLiveData<>(); // Use MediatorLiveData
     private LiveData<Integer> numberOfCars;
     private CarsRepository carsRepository;
@@ -69,7 +68,7 @@ public class CatalogViewModel extends ViewModel {
     private void initializeCarsForDisplay() {
         // We'll update carsForDisplay whenever allCarsLiveData, sortPreference, or favoriteCarIdsSource changes
         carsForDisplay.addSource(allCarsLiveData, cars -> updateCarsForDisplay());
-        carsForDisplay.addSource(sortPreference, sortPref -> updateCarsForDisplay());
+        carsForDisplay.addSource(sortOption, sortOption -> updateCarsForDisplay());
 
         // We need to get the favoriteCarIdsSource dynamically based on the current user
         // This will be null initially if user is not logged in, or if ID is not available yet
@@ -100,7 +99,7 @@ public class CatalogViewModel extends ViewModel {
     // This method will be called whenever any of the source LiveData (allCarsLiveData, sortPreference, favoriteCarIdsSource) changes.
     private void updateCarsForDisplay() {
         List<Car> currentCars = allCarsLiveData.getValue();
-        String currentSortPref = sortPreference.getValue();
+        SortOption currentSortOption = sortOption.getValue();
         String currentUserId = authRepository.getCurrentUserId().getValue();
         List<String> currentFavoriteCarIds = (favoriteCarIdsSource != null && favoriteCarIdsSource.getValue() != null) ? favoriteCarIdsSource.getValue() : new ArrayList<>();
 
@@ -110,7 +109,7 @@ public class CatalogViewModel extends ViewModel {
         }
 
         List<Car> sortedCars = new ArrayList<>(currentCars);
-        sortCars(sortedCars, currentSortPref != null ? currentSortPref : "none");
+        sortedCars.sort(currentSortOption.getComparator());
 
         List<CarCardModel> carCardModels = new ArrayList<>();
         for (Car car : sortedCars) {
@@ -121,8 +120,6 @@ public class CatalogViewModel extends ViewModel {
     }
 
 
-    // This method is no longer needed as the logic is now within updateCarsForDisplay
-    // private List<CarCardModel> createCarCardModels(List<Car> sortedCars, String userId) { /* ... */ }
 
     private void initializeNumberOfCars() {
         this.numberOfCars = Transformations.map(allCarsLiveData, cars -> (cars != null) ? cars.size() : 0);
@@ -138,42 +135,15 @@ public class CatalogViewModel extends ViewModel {
         return numberOfCars;
     }
 
-    public LiveData<String> getSortPreference() {
-        return this.sortPreference;
+    public LiveData<SortOption> getSortOption() {
+        return this.sortOption;
     }
 
-    // Instead of exposing setSortPreference, expose this:
+
     public void onSortOptionSelected(int menuItemId) {
-        String sortPreferenceFromMenuId = mapMenuIdToSortPreference(menuItemId);
-        if (!sortPreferenceFromMenuId.equals(sortPreference.getValue())) {
-            sortPreference.setValue(sortPreferenceFromMenuId);
-        }
-    }
-
-    private String mapMenuIdToSortPreference(int menuItemId) {
-        if (menuItemId == R.id.sort_by_price_asc) {
-            return "price_asc";
-        } else if (menuItemId == R.id.sort_by_price_desc) {
-            return "price_desc";
-        } else if (menuItemId == R.id.sort_by_year_desc) {
-            return "year_desc";
-        } else if (menuItemId == R.id.sort_by_year_asc) {
-            return "year_asc";
-        } else {
-            return sortPreference.getValue() != null ? sortPreference.getValue() : "year_desc";
-        }
-    }
-
-    // Helper method to sort the list of cars
-    private void sortCars(List<Car> cars, String sortPreference) {
-        if (sortPreference.equals("price_asc")) {
-            CarSortUtils.sortByPriceAscending(cars);
-        } else if (sortPreference.equals("price_desc")) {
-            CarSortUtils.sortByPriceDescending(cars);
-        } else if (sortPreference.equals("year_asc")) {
-            CarSortUtils.sortByYearOldest(cars);
-        } else if (sortPreference.equals("year_desc")) {
-            CarSortUtils.sortByYearNewest(cars);
+        SortOption selectedOption = SortOption.fromMenuItemId(menuItemId);
+        if (selectedOption != null && selectedOption != sortOption.getValue()) {
+            sortOption.setValue(selectedOption);
         }
     }
 
