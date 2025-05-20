@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="Сортировать"
+        app:showAsAction="always">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_by_ascending_price"
+                    android:title="По возрастанию цены" />
+                <item
+                    android:id="@+id/sort_by_descending_price"
+                    android:title="По убыванию цены" />
+                <item
+                    android:id="@+id/sort_by_newest"
+                    android:title="Сначала новее" />
+                <item
+                    android:id="@+id/sort_by_oldest"
+                    android:title="Сначала старше" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

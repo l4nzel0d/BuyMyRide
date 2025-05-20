@@ -50,11 +50,13 @@
                 android:text="У вас пока нет избранных автомобилей.
 Найдите авто в каталоге и нажмите ♡, чтобы добавить его в избранное."
                 android:textColor="@color/black"
+                android:textSize="20sp"
                 android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_favorite_cars"
                 android:layout_width="match_parent"
+                android:paddingHorizontal="-8dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 tools:listitem="@layout/car_card_item" />
