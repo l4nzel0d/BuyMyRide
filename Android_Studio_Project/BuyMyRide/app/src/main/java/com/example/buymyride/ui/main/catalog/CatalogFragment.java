@@ -155,7 +155,11 @@ public class CatalogFragment extends Fragment {
 
         viewModel.getNumberOfCars().observe(getViewLifecycleOwner(), numberOfCars -> {
             Log.d(TAG, "observeViewModel: numberOfCars LiveData updated. Count: " + numberOfCars);
-            binding.textNumberOfOffers.setText(numberOfCars + " предложений");
+            if (numberOfCars > 0) {
+                binding.catalogToolbar.setSubtitle(numberOfCars + " предложений");
+            } else {
+                binding.catalogToolbar.setSubtitle("");
+            }
         });
     }
 
@@ -163,12 +167,10 @@ public class CatalogFragment extends Fragment {
         if (carCardModels == null || carCardModels.isEmpty()) {
             binding.noCatalogText.setVisibility(View.VISIBLE);
             binding.recyclerViewCars.setVisibility(View.GONE);
-            binding.textNumberOfOffers.setVisibility(View.GONE);
             Log.d(TAG, "updateEmptyStateVisibility: Displaying 'no catalog text'.");
         } else {
             binding.noCatalogText.setVisibility(View.GONE);
             binding.recyclerViewCars.setVisibility(View.VISIBLE);
-            binding.textNumberOfOffers.setVisibility(View.VISIBLE);
             Log.d(TAG, "updateEmptyStateVisibility: Displaying cars, count: " + carCardModels.size());
         }
     }
