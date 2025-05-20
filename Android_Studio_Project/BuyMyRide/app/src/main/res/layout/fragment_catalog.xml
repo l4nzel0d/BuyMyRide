@@ -6,28 +6,20 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/catalog_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/catalog_appbar"
         android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            style="?attr/collapsingToolbarLayoutLargeSize"
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/catalog_toolbar"
             android:layout_width="match_parent"
-            android:id="@+id/catalog_collapsing_toolbar_layout"
-            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="0dp"
+            app:menu="@menu/sort_menu"
+            app:title="Каталог" />
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/catalog_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:elevation="0dp"
-                app:menu="@menu/sort_menu"
-                app:layout_collapseMode="pin"
-                app:title="Каталог" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -57,13 +49,13 @@
                 android:visibility="gone" />
 
             <TextView
+                android:id="@+id/text_number_of_offers"
+                style="@style/M3_Body_Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_number_of_offers"
                 android:text="8 предложений"
-                style="@style/M3_Body_Large"
-                android:textSize="22dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="22dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_cars"
