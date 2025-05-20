@@ -1,24 +1,21 @@
 package com.example.buymyride.ui.main.catalog;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.util.Log; // Import Log class
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager; // Reverted to LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.buymyride.R;
@@ -28,6 +25,7 @@ import com.example.buymyride.data.repositories.CarsRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
 import com.example.buymyride.databinding.FragmentCatalogBinding;
 import com.example.buymyride.ui.adapters.CarCardAdapter;
+import com.google.android.material.appbar.MaterialToolbar; // Import MaterialToolbar
 
 import java.util.List;
 
@@ -37,13 +35,15 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CatalogFragment extends Fragment {
-    private static final String TAG = "CatalogFragment";
+
+    private static final String TAG = "CatalogFragment"; // Define a TAG for logging
 
     private FragmentCatalogBinding binding;
     private CatalogViewModel viewModel;
     private CarCardAdapter carCardAdapter;
     private NavController navController;
 
+    // Repositories are injected directly into the Fragment as per your FavoritesFragment
     @Inject
     CarsRepository carsRepository;
     @Inject
@@ -54,8 +54,8 @@ public class CatalogFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        Log.d(TAG, "onCreate: Fragment created, options menu enabled.");
+        // No need for setHasOptionsMenu(true) when handling toolbar menu directly
+        Log.d(TAG, "onCreate: Fragment created.");
     }
 
     @Override
@@ -73,10 +73,40 @@ public class CatalogFragment extends Fragment {
         navController = Navigation.findNavController(view);
         Log.d(TAG, "onViewCreated: NavController initialized.");
 
+        setupToolbar(); // New method to set up the toolbar and its menu
         setupRecyclerView();
         setupViewModel();
         observeViewModel();
     }
+
+    private void setupToolbar() {
+        MaterialToolbar toolbar = binding.toolbar; // Access toolbar via binding
+
+
+        toolbar.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            String sortPreference = "";
+            if (id == R.id.sort_by_ascending_price) {
+                sortPreference = "price_asc";
+            } else if (id == R.id.sort_by_descending_price) {
+                sortPreference = "price_desc";
+            } else if (id == R.id.sort_by_newest) {
+                sortPreference = "year_desc";
+            } else if (id == R.id.sort_by_oldest) {
+                sortPreference = "year_asc";
+            }
+
+            if (!sortPreference.isEmpty()) {
+                viewModel.setSortPreference(sortPreference);
+                Log.d(TAG, "onMenuItemClick: Sort preference set to: " + sortPreference);
+                return true; // Consume the event
+            }
+            Log.d(TAG, "onMenuItemClick: Unhandled menu item ID: " + id);
+            return false; // Let it propagate if not handled here
+        });
+        Log.d(TAG, "setupToolbar: Toolbar menu listener set.");
+    }
+
 
     private void setupRecyclerView() {
         carCardAdapter = new CarCardAdapter(requireContext(), new CarCardAdapter.OnItemClickListener() {
@@ -105,12 +135,13 @@ public class CatalogFragment extends Fragment {
             }
         });
 
+        // REVERTED TO LINEAR LAYOUT MANAGER
         binding.recyclerViewCars.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerViewCars.setAdapter(carCardAdapter);
+        Log.d(TAG, "setupRecyclerView: RecyclerView initialized with adapter and LinearLayoutManager.");
     }
 
     private void setupViewModel() {
-        // Instantiate the factory using injected dependencies
         CatalogViewModel.Factory factory = new CatalogViewModel.Factory(carsRepository, myUsersRepository, authRepository);
         viewModel = new ViewModelProvider(this, factory).get(CatalogViewModel.class);
         Log.d(TAG, "setupViewModel: CatalogViewModel initialized.");
@@ -143,38 +174,6 @@ public class CatalogFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.sort_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-        Log.d(TAG, "onCreateOptionsMenu: Sort menu inflated.");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        String sortPreference = "";
-        if (id == R.id.sort_by_ascending_price) {
-            sortPreference = "price_asc";
-        } else if (id == R.id.sort_by_descending_price) {
-            sortPreference = "price_desc";
-        } else if (id == R.id.sort_by_newest) {
-            sortPreference = "year_desc";
-        } else if (id == R.id.sort_by_oldest) {
-            sortPreference = "year_asc";
-        }
-
-        if (!sortPreference.isEmpty()) {
-            viewModel.setSortPreference(sortPreference);
-            Log.d(TAG, "onOptionsItemSelected: Sort preference set to: " + sortPreference);
-            // Optionally, you might want to check the item to show it's selected
-            // item.setChecked(true); // You'd need to manage unchecked items for the group
-            return true;
-        }
-
-        Log.d(TAG, "onOptionsItemSelected: Unhandled menu item ID: " + id);
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onDestroyView() {
