@@ -1,6 +1,7 @@
 package com.example.buymyride.ui.main.favorites;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.buymyride.R;
@@ -32,6 +35,7 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private CarCardAdapter adapter;
     private TextView noFavoritesText;
+    private NavController navController;
 
     @Inject
     CarsRepository carsRepository;
@@ -52,16 +56,15 @@ public class FavoritesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_favorite_cars);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         noFavoritesText = view.findViewById(R.id.no_favorites_text);
+        navController = Navigation.findNavController(view);
 
         adapter = new CarCardAdapter(getContext(), new CarCardAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 CarCardModel carCardModel = adapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    // Navigate to CarDetailsFragment using carCardModel.getId()
-                    // Example using Navigation Component:
-                    // NavDirections action = FavoritesFragmentDirections.actionFavoritesFragmentToCarDetailsFragment(carCardModel.getId());
-                    // Navigation.findNavController(view).navigate(action);
+                    NavDirections action = FavoritesFragmentDirections.actionFavoritesFragmentToCarDetailsFragment(carCardModel.getId());
+                    navController.navigate(action);
                     android.util.Log.d("FavoritesFragment", "Car clicked with ID: " + carCardModel.getId());
                 }
             }

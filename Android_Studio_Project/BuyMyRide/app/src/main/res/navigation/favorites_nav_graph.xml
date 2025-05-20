@@ -8,11 +8,19 @@
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="com.example.buymyride.ui.main.favorites.FavoritesFragment"
-        android:label="Favorites" />
+        android:label="Favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_carDetailsFragment"
+            app:destination="@id/carDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/carDetailsFragment"
         android:name="com.example.buymyride.ui.main.common.CarDetailsFragment"
-        android:label="Car Details" />
+        android:label="Car Details">
+        <argument
+            android:name="carId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>
