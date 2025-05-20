@@ -1,5 +1,6 @@
 package com.example.buymyride.ui.main.common;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -84,6 +87,15 @@ public class CarDetailsFragment extends Fragment {
                 favoriteMenuItem.setIcon(isFavorite
                         ? R.drawable.ic_favorites_filled
                         : R.drawable.ic_favorites);
+                favoriteMenuItem.setChecked(isFavorite);
+
+                Drawable icon = favoriteMenuItem.getIcon();
+                if (icon != null) {
+                    icon = DrawableCompat.wrap(icon);
+                    DrawableCompat.setTint(icon, ContextCompat.getColor(requireContext(),
+                            isFavorite ? R.color.color_primary: R.color.black));
+                    favoriteMenuItem.setIcon(icon);
+                }
             }
         });
 
