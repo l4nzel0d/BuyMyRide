@@ -32,6 +32,10 @@
         <item name="colorSecondaryContainer">#6A0606</item>
         <item name="colorOnSurfaceVariant">#490404</item>
     </style>
+
+    <style name="MySortOptionsMenuStyle" parent="">
+        <item name="colorPrimary">#6A0606</item>
+    </style>
 </resources>
 
 
