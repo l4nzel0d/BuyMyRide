@@ -31,6 +31,7 @@ public class ProfileViewModel extends ViewModel {
     private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> _navigateToAuth = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> _navigateToEditProfile = new MutableLiveData<>(false);
 
     @Inject
     public ProfileViewModel(AuthRepository authRepository, MyUsersRepository myUsersRepository) {
@@ -61,6 +62,10 @@ public class ProfileViewModel extends ViewModel {
 
     public LiveData<Boolean> getNavigateToAuth() {
         return _navigateToAuth;
+    }
+
+    public LiveData<Boolean> getNavigateToEditProfile() {
+        return _navigateToEditProfile;
     }
 
     private void loadCurrentUser() {
@@ -109,6 +114,16 @@ public class ProfileViewModel extends ViewModel {
         authRepository.signOut();
         _navigateToAuth.setValue(true);
         _isLoading.setValue(false);
+    }
+
+    // New method to trigger navigation to EditProfileFragment
+    public void navigateToEditProfile() {
+        _navigateToEditProfile.setValue(true);
+    }
+
+    // New method to reset the navigation state
+    public void resetNavigateToEditProfile() {
+        _navigateToEditProfile.setValue(false);
     }
 
     @Override

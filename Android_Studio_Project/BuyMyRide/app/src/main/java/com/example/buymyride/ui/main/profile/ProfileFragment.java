@@ -5,14 +5,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.buymyride.databinding.FragmentProfileBinding;
 import com.example.buymyride.ui.auth.AuthActivity;
 import com.google.android.material.snackbar.Snackbar;
+import com.example.buymyride.R;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -21,6 +25,8 @@ public class ProfileFragment extends Fragment {
 
     private ProfileViewModel viewModel;
     private FragmentProfileBinding binding;
+    private NavController navController; // Declare NavController
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -32,6 +38,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        navController = Navigation.findNavController(view); // Initialize NavController
 
         observeViewModel();
         setListeners();
@@ -58,6 +65,7 @@ public class ProfileFragment extends Fragment {
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             binding.buttonSignOut.setEnabled(!isLoading);
+            binding.buttonEditProfile.setEnabled(!isLoading);
             // Optionally show a progress bar based on isLoading
         });
 
@@ -67,11 +75,23 @@ public class ProfileFragment extends Fragment {
                 requireActivity().finish();
             }
         });
+
+        // Observe the new LiveData for navigation to EditProfileFragment
+        viewModel.getNavigateToEditProfile().observe(getViewLifecycleOwner(), navigate -> {
+            if (Boolean.TRUE.equals(navigate)) {
+                navController.navigate(R.id.action_profileFragment_to_editProfileFragment);
+                viewModel.resetNavigateToEditProfile(); // Reset the LiveData to prevent re-triggering
+            }
+        });
     }
 
     private void setListeners() {
         binding.buttonSignOut.setOnClickListener(v -> {
             viewModel.signOut();
+        });
+
+        binding.buttonEditProfile.setOnClickListener(v -> {
+            viewModel.navigateToEditProfile();
         });
     }
 

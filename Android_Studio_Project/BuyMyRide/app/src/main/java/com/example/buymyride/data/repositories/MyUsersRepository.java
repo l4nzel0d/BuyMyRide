@@ -79,6 +79,38 @@ public class MyUsersRepository {
         return future;
     }
 
+    private CompletableFuture<Void> updateUserDataField(String userId, String fieldName, String newValue) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        if (userId == null || fieldName == null || newValue == null) {
+            future.completeExceptionally(new IllegalArgumentException("User ID, field name, or new value cannot be null."));
+            return future;
+        }
+
+        DocumentReference userDocRef = usersCollection.document(userId);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(fieldName, newValue);
+
+        userDocRef.update(updates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        future.complete(null);
+                    } else {
+                        future.completeExceptionally(task.getException());
+                    }
+                });
+        return future;
+    }
+
+    public CompletableFuture<Void> updateUserProfile(String userId, String newName, String newPhoneNumber) {
+        // Create CompletableFuture to combine results
+        CompletableFuture<Void> nameUpdateFuture = updateUserDataField(userId, "name", newName);
+        CompletableFuture<Void> phoneUpdateFuture = updateUserDataField(userId, "phoneNumber", newPhoneNumber);
+
+        // Combine the two futures. This future will complete successfully if both complete successfully,
+        // or complete exceptionally if either one fails.
+        return CompletableFuture.allOf(nameUpdateFuture, phoneUpdateFuture);
+    }
+
     public CompletableFuture<Void> addCarToFavorites(String userId, String carId) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         DocumentReference favCarRef = usersCollection.document(userId)
