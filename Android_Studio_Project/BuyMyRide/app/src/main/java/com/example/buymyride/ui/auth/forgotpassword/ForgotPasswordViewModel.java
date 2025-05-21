@@ -17,7 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class ForgotPasswordViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
+    private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -52,6 +52,7 @@ public class ForgotPasswordViewModel extends ViewModel {
                         isLoading.postValue(false);
                         if (result.isSuccessful()) {
                             isEmailSent.postValue(true);
+                            navigateToSignIn.postValue(true);
                             //  Consider navigating back here or showing a dialog
                         } else {
                             errorMessage.postValue("Failed to send reset email: " + result.getException().getMessage());
@@ -65,7 +66,4 @@ public class ForgotPasswordViewModel extends ViewModel {
         });
     }
 
-    public void navigateToSignIn() {
-        navigateToSignIn.setValue(true);
-    }
 }

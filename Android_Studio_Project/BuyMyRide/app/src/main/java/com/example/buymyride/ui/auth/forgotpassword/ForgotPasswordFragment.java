@@ -60,8 +60,7 @@ public class ForgotPasswordFragment extends Fragment {
 
         viewModel.getIsEmailSent().observe(getViewLifecycleOwner(), isSent -> {
             if (isSent) {
-                Snackbar.make(binding.getRoot(), "Password reset email sent. Check your inbox.", Snackbar.LENGTH_LONG)
-                        .setAction("Sign In", v -> navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment))
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Сообщение для сброса пароля отправлено. Проверьте вашу почту.", Snackbar.LENGTH_LONG)
                         .show();
             }
         });
@@ -70,10 +69,16 @@ public class ForgotPasswordFragment extends Fragment {
             binding.buttonResetPassword.setEnabled(!isLoading);
         });
 
+        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), navigateToSignIn -> {
+            if (navigateToSignIn) {
+                navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
+            }
+        });
+
         binding.buttonResetPassword.setOnClickListener(v -> {
             String email = binding.inputEmail.getText().toString().trim();
             if (email.isEmpty()) {
-                Snackbar.make(binding.getRoot(), "Please enter your email address", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "Пожалуйста, введите email.", Snackbar.LENGTH_SHORT).show();
                 return; // Stop execution if the email is empty
             }
             viewModel.resetPassword(email);
