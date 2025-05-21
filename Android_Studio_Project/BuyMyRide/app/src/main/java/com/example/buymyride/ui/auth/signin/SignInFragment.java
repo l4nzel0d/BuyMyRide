@@ -1,7 +1,10 @@
-package com.example.buymyride.ui.auth;
+package com.example.buymyride.ui.auth.signin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,27 +13,23 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.example.buymyride.R;
-import com.example.buymyride.databinding.FragmentSignUpBinding;
+import com.example.buymyride.databinding.FragmentSignInBinding; // Import generated binding class
 import com.example.buymyride.ui.main.MainActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class SignUpFragment extends Fragment {
+public class SignInFragment extends Fragment {
 
-    SignUpViewModel viewModel;
+    SignInViewModel viewModel;
     private NavController navController;
-    private FragmentSignUpBinding binding;
+    private FragmentSignInBinding binding; // Use View Binding
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentSignUpBinding.inflate(inflater, container, false);
+        binding = FragmentSignInBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -39,29 +38,29 @@ public class SignUpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
 
-        viewModel = new ViewModelProvider(this).get(SignUpViewModel.class);
+        viewModel = new ViewModelProvider(this).get(SignInViewModel.class); // Get ViewModel instance
 
         setListeners();
         observeViewModel();
     }
 
     private void setListeners() {
-        binding.buttonSignUp.setOnClickListener(v -> {
-            String name = binding.inputName.getText().toString().trim();
+        binding.buttonSignIn.setOnClickListener(v -> {
             String email = binding.inputEmail.getText().toString().trim();
-            String phone = binding.inputPhone.getText().toString().trim();
             String password = binding.inputPassword.getText().toString().trim();
-
-            // Basic input validation (you might want more robust validation)
-            if (!name.isEmpty() && !email.isEmpty() && !phone.isEmpty() && !password.isEmpty()) {
-                viewModel.signUp(name, email, phone, password); // For simplicity, only registering with email and password
+            if (!email.isEmpty() && !password.isEmpty()) {
+                viewModel.signIn(email, password);
             } else {
-                Snackbar.make(binding.getRoot(), "Пожалуйста, заполните все поля", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), "Пожалуйста, введите email и пароль", Snackbar.LENGTH_SHORT).show();
             }
         });
 
-        binding.textSignIn.setOnClickListener(v -> {
-            viewModel.navigateToSignIn();
+        binding.textRegister.setOnClickListener(v -> {
+            viewModel.navigateToSignUp();
+        });
+
+        binding.textResetPassword.setOnClickListener(v -> {
+            viewModel.navigateToForgotPassword();
         });
     }
 
@@ -72,9 +71,15 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), navigate -> {
+        viewModel.getNavigateToSignUp().observe(getViewLifecycleOwner(), navigate -> {
             if (Boolean.TRUE.equals(navigate)) {
-                navController.navigate(R.id.action_signUpFragment_to_signInFragment);
+                navController.navigate(R.id.action_signInFragment_to_signUpFragment);
+            }
+        });
+
+        viewModel.getNavigateToForgotPassword().observe(getViewLifecycleOwner(), navigate -> {
+            if (Boolean.TRUE.equals(navigate)) {
+                navController.navigate(R.id.action_signInFragment_to_forgotPassword);
             }
         });
 
@@ -86,15 +91,14 @@ public class SignUpFragment extends Fragment {
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.buttonSignUp.setEnabled(!isLoading);
+            // You might want to add a ProgressBar to your layout and control its visibility here
+            binding.buttonSignIn.setEnabled(!isLoading);
         });
-
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding = null; // Important for memory management
     }
-
 }

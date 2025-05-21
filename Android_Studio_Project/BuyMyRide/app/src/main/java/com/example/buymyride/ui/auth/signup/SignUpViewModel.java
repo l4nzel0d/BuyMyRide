@@ -1,4 +1,4 @@
-package com.example.buymyride.ui.auth;
+package com.example.buymyride.ui.auth.signup;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

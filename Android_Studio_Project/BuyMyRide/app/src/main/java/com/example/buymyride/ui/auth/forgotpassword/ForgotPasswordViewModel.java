@@ -1,4 +1,4 @@
-package com.example.buymyride.ui.auth;
+package com.example.buymyride.ui.auth.forgotpassword;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
