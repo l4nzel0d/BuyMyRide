@@ -35,7 +35,6 @@ public class CarDetailsFragment extends Fragment {
 
     private FragmentCarDetailsBinding binding;
     private CarDetailsViewModel viewModel;
-    private String carId;
     private MenuItem favoriteMenuItem;
 
     public CarDetailsFragment() {
@@ -58,18 +57,14 @@ public class CarDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(CarDetailsViewModel.class);
 
-        // Set up RecyclerView for specs
         binding.recyclerViewCarSpecs.setLayoutManager(new LinearLayoutManager(getContext()));
         favoriteMenuItem = binding.topAppBar.getMenu().findItem(R.id.action_favorite);
 
-        binding.topAppBar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_favorite) {
-                viewModel.toggleFavorite();
-                return true;
-            }
-            return false;
-        });
+        setListeners();
+        observeViewModel();
+    }
 
+    private void observeViewModel() {
         viewModel.getIsFavorite().observe(getViewLifecycleOwner(), isFavorite -> {
             if (favoriteMenuItem != null) {
                 favoriteMenuItem.setIcon(isFavorite
@@ -94,13 +89,20 @@ public class CarDetailsFragment extends Fragment {
                 binding.textMake.setText("Error loading car details");
             }
         });
+    }
 
+    private void setListeners() {
+        binding.topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_favorite) {
+                viewModel.toggleFavorite();
+                return true;
+            }
+            return false;
+        });
 
         binding.topAppBar.setNavigationOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
-
-
     }
 
     private void updateUI(Car car) {

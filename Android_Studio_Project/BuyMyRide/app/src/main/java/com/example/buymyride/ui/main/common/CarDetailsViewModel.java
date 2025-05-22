@@ -57,30 +57,28 @@ public class CarDetailsViewModel extends ViewModel {
 
     public void toggleFavorite() {
         String userId = authRepository.getCurrentUserId().getValue(); // Get user ID
-        if (userId != null) {
-            if (isFavorite.getValue()) {
-                // Remove from favorites
-                myUsersRepository.removeCarFromFavorites(userId, carId)
-                        .thenAccept(aVoid -> {
-                            isFavorite.postValue(false); // Update LiveData
-                        })
-                        .exceptionally(throwable -> {
-                            // Handle error (e.g., show a toast)
-                            return null;
-                        });
-            } else {
-                // Add to favorites
-                myUsersRepository.addCarToFavorites(userId, carId)
-                        .thenAccept(aVoid -> {
-                            isFavorite.postValue(true); // Update LiveData
-                        })
-                        .exceptionally(throwable -> {
-                            // Handle error
-                            return null;
-                        });
-            }
+        if (userId == null) return;
+
+        if (Boolean.TRUE.equals(isFavorite.getValue())) {
+            // Remove from favorites
+            myUsersRepository.removeCarFromFavorites(userId, carId)
+                    .thenAccept(aVoid -> {
+                        isFavorite.postValue(false); // Update LiveData
+                    })
+                    .exceptionally(throwable -> {
+                        // Handle error (e.g., show a toast)
+                        return null;
+                    });
         } else {
-            // Handle the case where the user is not logged in (e.g., show a message)
+            // Add to favorites
+            myUsersRepository.addCarToFavorites(userId, carId)
+                    .thenAccept(aVoid -> {
+                        isFavorite.postValue(true); // Update LiveData
+                    })
+                    .exceptionally(throwable -> {
+                        // Handle error
+                        return null;
+                    });
         }
     }
 
