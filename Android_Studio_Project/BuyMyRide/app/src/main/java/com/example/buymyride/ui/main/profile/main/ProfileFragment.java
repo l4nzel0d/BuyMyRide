@@ -57,30 +57,31 @@ public class ProfileFragment extends Fragment {
             binding.textPhone.setText(phone != null ? phone : "");
         });
 
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
-            if (errorMessage != null) {
-                Snackbar.make(binding.getRoot(), errorMessage, Snackbar.LENGTH_SHORT).show();
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            if (event == null) return;
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
             }
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             binding.buttonSignOut.setEnabled(!isLoading);
             binding.buttonEditProfile.setEnabled(!isLoading);
-            // Optionally show a progress bar based on isLoading
         });
 
-        viewModel.getNavigateToAuth().observe(getViewLifecycleOwner(), navigate -> {
-            if (Boolean.TRUE.equals(navigate)) {
-                startActivity(new Intent(requireContext(), AuthActivity.class));
-                requireActivity().finish();
-            }
-        });
+        viewModel.getNavigateEvent().observe(getViewLifecycleOwner(), event -> {
+            ProfileNavigationDestination destination = event.getContentIfNotHandled();
+            if (destination == null) return;
 
-        // Observe the new LiveData for navigation to EditProfileFragment
-        viewModel.getNavigateToEditProfile().observe(getViewLifecycleOwner(), navigate -> {
-            if (Boolean.TRUE.equals(navigate)) {
-                navController.navigate(R.id.action_profileFragment_to_editProfileFragment);
-                viewModel.resetNavigateToEditProfile(); // Reset the LiveData to prevent re-triggering
+            switch (destination) {
+                case EDIT_PROFILE -> navController.navigate(R.id.action_profileFragment_to_editProfileFragment);
+                case AUTH -> {
+                    Intent intent = new Intent(requireContext(), AuthActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                }
             }
         });
     }

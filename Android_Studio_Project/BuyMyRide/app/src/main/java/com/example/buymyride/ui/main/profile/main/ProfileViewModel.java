@@ -5,10 +5,14 @@ import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.example.buymyride.data.models.MyUser;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
+import com.example.buymyride.util.OneTimeEvent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,113 +26,99 @@ public class ProfileViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
     private final MyUsersRepository myUsersRepository;
-    private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
-    private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
-    private final MutableLiveData<String> _name = new MutableLiveData<>();
-    private final MutableLiveData<String> _email = new MutableLiveData<>();
-    private final MutableLiveData<String> _phone = new MutableLiveData<>();
-    private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> _navigateToAuth = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> _navigateToEditProfile = new MutableLiveData<>(false);
+
+    private final LiveData<String> name;
+    private final LiveData<String> email;
+    private final LiveData<String> phone;
+
+    private final MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
+    private final MutableLiveData<OneTimeEvent<ProfileNavigationDestination>> navigateEvent = new MutableLiveData<>();
+    private final LiveData<MyUser> currentUserData;
+
+    private Observer<MyUser> userDataObserver;
 
     @Inject
     public ProfileViewModel(AuthRepository authRepository, MyUsersRepository myUsersRepository) {
         this.authRepository = authRepository;
         this.myUsersRepository = myUsersRepository;
-        loadCurrentUser();
+
+        isLoading.setValue(true);
+
+        currentUserData = Transformations.switchMap(authRepository.getLiveFirebaseUser(), firebaseUser -> {
+            if (firebaseUser == null) {
+                navigateEvent.postValue(new OneTimeEvent<>(ProfileNavigationDestination.AUTH));
+                errorMessage.setValue(null);
+                isLoading.setValue(false);
+                return new MutableLiveData<>(null);
+            } else {
+                isLoading.setValue(true);
+                return myUsersRepository.getUserDataLiveData(firebaseUser.getUid());
+            }
+        });
+
+        name = Transformations.map(currentUserData, user -> user != null ? user.name() : "");
+        email = Transformations.map(currentUserData, user -> user != null ? user.email() : "");
+        phone = Transformations.map(currentUserData, user -> user != null ? user.phoneNumber() : "");
+
+        observeUserDataStates();
     }
 
+    private void observeUserDataStates() {
+        userDataObserver = user -> {
+            isLoading.setValue(false);
+
+            if (user == null && authRepository.getLiveFirebaseUser().getValue() != null) {
+                errorMessage.setValue(new OneTimeEvent<>("User profile data not found or failed to load."));
+            } else if (user != null) {
+                errorMessage.setValue(null);
+            }
+        };
+        currentUserData.observeForever(userDataObserver);
+    }
+
+
+
     public LiveData<String> getName() {
-        return _name;
+        return name;
     }
 
     public LiveData<String> getEmail() {
-        return _email;
+        return email;
     }
 
     public LiveData<String> getPhone() {
-        return _phone;
+        return phone;
     }
 
-    public LiveData<String> getErrorMessage() {
-        return _errorMessage;
+    public LiveData<OneTimeEvent<String>> getErrorMessage() {
+        return errorMessage;
     }
 
     public LiveData<Boolean> getIsLoading() {
-        return _isLoading;
+        return isLoading;
     }
 
-    public LiveData<Boolean> getNavigateToAuth() {
-        return _navigateToAuth;
-    }
-
-    public LiveData<Boolean> getNavigateToEditProfile() {
-        return _navigateToEditProfile;
-    }
-
-    private void loadCurrentUser() {
-        _isLoading.setValue(true);
-        authRepository.getCurrentUserId().observeForever(userId -> {
-            if (userId != null) {
-                fetchUserData(userId);
-            } else {
-                mainThreadHandler.post(() -> {
-                    _name.setValue(null);
-                    _email.setValue(null);
-                    _phone.setValue(null);
-                    _isLoading.setValue(false);
-                });
-            }
-        });
-    }
-
-    private void fetchUserData(String userId) {
-        ioExecutor.execute(() -> {
-            myUsersRepository.getUserData(userId)
-                    .thenAccept(user -> {
-                        mainThreadHandler.post(() -> {
-                            if (user != null) {
-                                _name.setValue(user.name());
-                                _email.setValue(user.email());
-                                _phone.setValue(user.phoneNumber());
-                            } else {
-                                _errorMessage.setValue("User data not found.");
-                            }
-                            _isLoading.setValue(false);
-                        });
-                    })
-                    .exceptionally(throwable -> {
-                        mainThreadHandler.post(() -> {
-                            _errorMessage.setValue("Failed to load user data: " + throwable.getMessage());
-                            _isLoading.setValue(false);
-                        });
-                        return null;
-                    });
-        });
+    public LiveData<OneTimeEvent<ProfileNavigationDestination>> getNavigateEvent() {
+        return navigateEvent;
     }
 
     public void signOut() {
-        _isLoading.setValue(true);
+        isLoading.setValue(true);
         authRepository.signOut();
-        _navigateToAuth.setValue(true);
-        _isLoading.setValue(false);
     }
 
-    // New method to trigger navigation to EditProfileFragment
     public void navigateToEditProfile() {
-        _navigateToEditProfile.setValue(true);
-    }
-
-    // New method to reset the navigation state
-    public void resetNavigateToEditProfile() {
-        _navigateToEditProfile.setValue(false);
+        navigateEvent.setValue(new OneTimeEvent<>(ProfileNavigationDestination.EDIT_PROFILE));
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        ioExecutor.shutdown();
+        if (userDataObserver != null) {
+            currentUserData.removeObserver(userDataObserver);
+        }
     }
 }

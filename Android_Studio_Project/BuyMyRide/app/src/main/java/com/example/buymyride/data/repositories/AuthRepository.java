@@ -1,5 +1,6 @@
 package com.example.buymyride.data.repositories;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -14,12 +15,25 @@ import javax.inject.Singleton;
 @Singleton
 public class AuthRepository {
     private final FirebaseAuth firebaseAuth;
+    private final MutableLiveData<FirebaseUser> liveFirebaseUser = new MutableLiveData<>();
 
     @Inject
     public AuthRepository(FirebaseAuth firebaseAuth) {
         this.firebaseAuth = firebaseAuth;
+
+        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth auth) {
+                liveFirebaseUser.setValue(auth.getCurrentUser());
+            }
+        });
+
+        liveFirebaseUser.setValue(firebaseAuth.getCurrentUser());
     }
 
+    public LiveData<FirebaseUser> getLiveFirebaseUser() {
+        return liveFirebaseUser;
+    }
 
     public CompletableFuture<String> signUp(String email, String password) {
         CompletableFuture<String> future = new CompletableFuture<>();

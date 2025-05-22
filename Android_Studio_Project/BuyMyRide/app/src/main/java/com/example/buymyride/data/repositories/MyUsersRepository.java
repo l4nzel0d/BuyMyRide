@@ -1,5 +1,6 @@
 package com.example.buymyride.data.repositories;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -7,8 +8,10 @@ import com.example.buymyride.data.models.MyUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -52,6 +55,39 @@ public class MyUsersRepository {
                     }
                 });
         return future;
+    }
+
+    public LiveData<MyUser> getUserDataLiveData(String userId) {
+        MutableLiveData<MyUser> liveData = new MutableLiveData<>();
+
+        if (userId == null) {
+            liveData.setValue(null);
+            return liveData;
+        }
+
+        firestore.collection("users").document(userId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot document, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            liveData.setValue(null); // Or handle error state if you have one
+                            return;
+                        }
+
+                        if (document != null && document.exists()) {
+                            // Convert DocumentSnapshot to MyUser object
+                            String email = document.getString("email");
+                            String name = document.getString("name");
+                            String phoneNumber = document.getString("phoneNumber");
+                            MyUser myUser = new MyUser(userId, email, name, phoneNumber);
+                            liveData.setValue(myUser); // Update LiveData with new user data
+                        } else {
+                            liveData.setValue(null);
+                        }
+                    }
+                });
+
+        return liveData;
     }
 
     public CompletableFuture<MyUser> getUserData(String userId) {
