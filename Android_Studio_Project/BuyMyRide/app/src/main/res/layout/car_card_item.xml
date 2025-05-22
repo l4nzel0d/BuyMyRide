@@ -105,7 +105,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:scaleType="center"
-                    android:src="@drawable/favorite_icon_selector"
+                    android:src="@drawable/ic_favorites_selector"
                     app:tint="@color/favorite_tint_selector" />
 
 
