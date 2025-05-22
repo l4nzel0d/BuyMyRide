@@ -3,6 +3,7 @@ package com.example.buymyride.data.repositories;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,8 +32,14 @@ public class AuthRepository {
         liveFirebaseUser.setValue(firebaseAuth.getCurrentUser());
     }
 
-    public LiveData<FirebaseUser> getLiveFirebaseUser() {
-        return liveFirebaseUser;
+    public LiveData<String> getLiveUserId() {
+        return Transformations.map(liveFirebaseUser, firebaseUser -> {
+            if (firebaseUser != null) {
+                return firebaseUser.getUid();
+            } else {
+                return null;
+            }
+        });
     }
 
     public CompletableFuture<String> signUp(String email, String password) {

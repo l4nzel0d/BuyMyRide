@@ -46,13 +46,13 @@ public class ProfileViewModel extends ViewModel {
 
         isLoading.setValue(true);
 
-        currentUserData = Transformations.switchMap(authRepository.getLiveFirebaseUser(), firebaseUser -> {
-            if (firebaseUser == null) {
+        currentUserData = Transformations.switchMap(authRepository.getLiveUserId(), userId -> {
+            if (userId == null) {
                 handleSignedOutState();
                 return new MutableLiveData<>(null);
             } else {
                 isLoading.setValue(true);
-                return myUsersRepository.getUserDataLiveData(firebaseUser.getUid());
+                return myUsersRepository.getUserDataLiveData(userId);
             }
         });
 
@@ -68,7 +68,7 @@ public class ProfileViewModel extends ViewModel {
                 cachedName.setValue(user.name());
                 cachedEmail.setValue(user.email());
                 cachedPhone.setValue(user.phoneNumber());
-            } else if (authRepository.getLiveFirebaseUser().getValue() != null) {
+            } else if (authRepository.getLiveUserId().getValue() != null) {
                 errorMessage.setValue(new OneTimeEvent<>("User profile data not found or failed to load."));
             }
         };
