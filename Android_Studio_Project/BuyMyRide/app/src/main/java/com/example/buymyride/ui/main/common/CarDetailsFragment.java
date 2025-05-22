@@ -85,8 +85,9 @@ public class CarDetailsFragment extends Fragment {
         viewModel.getCar().observe(getViewLifecycleOwner(), car -> {
             if (car != null) {
                 updateUI(car);
+                binding.carTextDetailsLayout.setVisibility(View.VISIBLE);
             } else {
-                binding.textMake.setText("Error loading car details");
+                binding.carTextDetailsLayout.setVisibility(View.GONE);
             }
         });
     }

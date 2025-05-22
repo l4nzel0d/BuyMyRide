@@ -18,7 +18,7 @@
             android:minHeight="?attr/actionBarSize"
             app:menu="@menu/car_details_app_bar_menu"
             app:navigationIcon="@drawable/ic_navigation_back"
-            app:title="Audi Q8"
+            app:title="Загрузка..."
             app:titleCentered="true" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         android:id="@+id/car_details_nested_scroll"
         android:clipToPadding="false"
-        android:paddingBottom="180dp"
+        android:paddingBottom="140dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
@@ -43,15 +43,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="309dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/audi_q8_2024" />
+                android:src="@drawable/placeholder" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="24dp" />
 
             <LinearLayout
-                android:id="@+id/in_marigns_content"
+                android:id="@+id/car_text_details_layout"
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">

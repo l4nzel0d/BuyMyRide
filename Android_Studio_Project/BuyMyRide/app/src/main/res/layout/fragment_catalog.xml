@@ -19,7 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             android:elevation="0dp"
             app:menu="@menu/sort_menu"
-            app:subtitle="8 предложений"
             app:title="Каталог" />
 
     </com.google.android.material.appbar.AppBarLayout>
