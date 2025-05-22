@@ -34,7 +34,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class CatalogFragment extends Fragment {
     private Menu toolbarMenu;
-    private static final String TAG = "CatalogFragment"; // Define a TAG for logging
 
     private FragmentCatalogBinding binding;
     private CatalogViewModel viewModel;
@@ -45,24 +44,19 @@ public class CatalogFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // No need for setHasOptionsMenu(true) when handling toolbar menu directly
-        Log.d(TAG, "onCreate: Fragment created.");
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCatalogBinding.inflate(inflater, container, false);
-        Log.d(TAG, "onCreateView: Layout inflated using View Binding.");
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated: View created.");
 
         navController = Navigation.findNavController(view);
-        Log.d(TAG, "onViewCreated: NavController initialized.");
 
         setupRecyclerView();
         setupViewModel();
@@ -96,7 +90,6 @@ public class CatalogFragment extends Fragment {
             }
         });
 
-        Log.d(TAG, "setupToolbar: Toolbar menu listener set and sortPreference observer attached.");
     }
 
 
@@ -106,12 +99,10 @@ public class CatalogFragment extends Fragment {
             public void onItemClick(int position) {
                 CarCardModel carCardModel = carCardAdapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    Log.d(TAG, "onItemClick: Car card clicked, ID: " + carCardModel.getId());
                     CatalogFragmentDirections.ActionCatalogFragmentToCarDetailsFragment action =
-                            CatalogFragmentDirections.actionCatalogFragmentToCarDetailsFragment(carCardModel.getId());
+                            CatalogFragmentDirections.actionCatalogFragmentToCarDetailsFragment(carCardModel.id());
                     navController.navigate(action);
                 } else {
-                    Log.w(TAG, "onItemClick: Clicked item at position " + position + " but CarCardModel was null.");
                 }
             }
 
@@ -119,10 +110,7 @@ public class CatalogFragment extends Fragment {
             public void onFavoriteClick(int position) {
                 CarCardModel carCardModel = carCardAdapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    Log.d(TAG, "onFavoriteClick: Favorite icon clicked for car ID: " + carCardModel.getId() + ", current favorite status: " + carCardModel.isFavorite());
-                    viewModel.updateFavoriteStatus(carCardModel.getId(), !carCardModel.isFavorite());
-                } else {
-                    Log.w(TAG, "onFavoriteClick: Clicked favorite for item at position " + position + " but CarCardModel was null.");
+                    viewModel.updateFavoriteStatus(carCardModel.id(), !carCardModel.isFavorite());
                 }
             }
         });
@@ -130,23 +118,19 @@ public class CatalogFragment extends Fragment {
         // REVERTED TO LINEAR LAYOUT MANAGER
         binding.recyclerViewCars.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerViewCars.setAdapter(carCardAdapter);
-        Log.d(TAG, "setupRecyclerView: RecyclerView initialized with adapter and LinearLayoutManager.");
     }
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
-        Log.d(TAG, "setupViewModel: CatalogViewModel initialized.");
     }
 
     private void observeViewModel() {
         viewModel.getCarsForDisplay().observe(getViewLifecycleOwner(), carCardModels -> {
-            Log.d(TAG, "observeViewModel: carsForDisplay LiveData updated. Number of models: " + (carCardModels != null ? carCardModels.size() : "null"));
             carCardAdapter.setCarCardModelList(carCardModels);
             updateEmptyStateVisibility(carCardModels);
         });
 
         viewModel.getNumberOfCars().observe(getViewLifecycleOwner(), numberOfCars -> {
-            Log.d(TAG, "observeViewModel: numberOfCars LiveData updated. Count: " + numberOfCars);
             if (numberOfCars > 0) {
                 binding.catalogToolbar.setSubtitle(numberOfCars + " предложений");
             } else {
@@ -159,11 +143,9 @@ public class CatalogFragment extends Fragment {
         if (carCardModels == null || carCardModels.isEmpty()) {
             binding.noCatalogText.setVisibility(View.VISIBLE);
             binding.recyclerViewCars.setVisibility(View.GONE);
-            Log.d(TAG, "updateEmptyStateVisibility: Displaying 'no catalog text'.");
         } else {
             binding.noCatalogText.setVisibility(View.GONE);
             binding.recyclerViewCars.setVisibility(View.VISIBLE);
-            Log.d(TAG, "updateEmptyStateVisibility: Displaying cars, count: " + carCardModels.size());
         }
     }
 
@@ -172,6 +154,5 @@ public class CatalogFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        Log.d(TAG, "onDestroyView: View binding set to null.");
     }
 }

@@ -43,13 +43,13 @@ public class CarCardAdapter extends RecyclerView.Adapter<CarCardAdapter.CarViewH
     public void onBindViewHolder(@NonNull CarViewHolder holder, int position) {
         CarCardModel carCardModel = carCardModelList.get(position);
 
-        holder.textMake.setText(carCardModel.getMake());
-        holder.textModel.setText(carCardModel.getModel());
-        holder.textYear.setText(String.valueOf(carCardModel.getYear()));
-        holder.textPrice.setText(String.format("%,d", carCardModel.getPrice()).replace(',', ' ') + " ₽");
+        holder.textMake.setText(carCardModel.make());
+        holder.textModel.setText(carCardModel.model());
+        holder.textYear.setText(String.valueOf(carCardModel.year()));
+        holder.textPrice.setText(String.format("%,d", carCardModel.price()).replace(',', ' ') + " ₽");
 
         Glide.with(context)
-                .load(carCardModel.getImageUrl())
+                .load(carCardModel.imageUrl())
                 .into(holder.carImage);
 
         holder.imageFavorite.setSelected(carCardModel.isFavorite());

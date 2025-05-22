@@ -60,7 +60,7 @@ public class FavoritesFragment extends Fragment {
             public void onItemClick(int position) {
                 CarCardModel carCardModel = adapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    NavDirections action = FavoritesFragmentDirections.actionFavoritesFragmentToCarDetailsFragment(carCardModel.getId());
+                    NavDirections action = FavoritesFragmentDirections.actionFavoritesFragmentToCarDetailsFragment(carCardModel.id());
                     navController.navigate(action);
                 }
             }
@@ -69,7 +69,7 @@ public class FavoritesFragment extends Fragment {
             public void onFavoriteClick(int position) {
                 CarCardModel carCardModel = adapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    viewModel.updateFavoriteStatus(carCardModel.getId(), !carCardModel.isFavorite());
+                    viewModel.updateFavoriteStatus(carCardModel.id(), !carCardModel.isFavorite());
                 }
             }
         });
