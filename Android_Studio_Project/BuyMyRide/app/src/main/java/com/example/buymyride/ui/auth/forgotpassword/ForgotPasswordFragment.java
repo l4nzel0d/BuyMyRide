@@ -48,10 +48,11 @@ public class ForgotPasswordFragment extends Fragment {
         topAppBar = view.findViewById(R.id.topAppBar);
         viewModel = new ViewModelProvider(this).get(ForgotPasswordViewModel.class);
 
-        topAppBar.setNavigationOnClickListener(v -> {
-            navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
-        });
+        setListeners();
+        observeViewModel();
+    }
 
+    private void observeViewModel() {
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
             if (errorMessage != null) {
                 Snackbar.make(binding.getRoot(), errorMessage, Snackbar.LENGTH_SHORT).show();
@@ -74,12 +75,18 @@ public class ForgotPasswordFragment extends Fragment {
                 navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
             }
         });
+    }
+
+    private void setListeners() {
+        topAppBar.setNavigationOnClickListener(v -> {
+            navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
+        });
 
         binding.buttonResetPassword.setOnClickListener(v -> {
             String email = binding.inputEmail.getText().toString().trim();
             if (email.isEmpty()) {
                 Snackbar.make(requireActivity().findViewById(android.R.id.content), "Пожалуйста, введите email.", Snackbar.LENGTH_SHORT).show();
-                return; // Stop execution if the email is empty
+                return;
             }
             viewModel.resetPassword(email);
         });

@@ -50,17 +50,12 @@ public class ForgotPasswordViewModel extends ViewModel {
             authRepository.resetPassword(email)
                     .thenAccept(result -> {
                         isLoading.postValue(false);
-                        if (result.isSuccessful()) {
-                            isEmailSent.postValue(true);
-                            navigateToSignIn.postValue(true);
-                            //  Consider navigating back here or showing a dialog
-                        } else {
-                            errorMessage.postValue("Failed to send reset email: " + result.getException().getMessage());
-                        }
+                        isEmailSent.postValue(true);
+                        navigateToSignIn.postValue(true);
                     })
                     .exceptionally(throwable -> {
                         isLoading.postValue(false);
-                        errorMessage.postValue("Error: " + throwable.getMessage());
+                        errorMessage.postValue(throwable.getMessage());
                         return null;
                     });
         });

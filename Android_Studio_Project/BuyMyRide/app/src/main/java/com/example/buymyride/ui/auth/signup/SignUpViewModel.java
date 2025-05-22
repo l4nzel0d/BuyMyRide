@@ -24,7 +24,6 @@ public class SignUpViewModel extends ViewModel {
     private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private Executor executor = Executors.newSingleThreadExecutor();
 
 
     public LiveData<String> getErrorMessage() {
@@ -51,39 +50,21 @@ public class SignUpViewModel extends ViewModel {
 
     public void signUp(final String name, final String email, final String phoneNumber, final String password) {
         isLoading.setValue(true);
-        executor.execute(() -> {
-            createUser(name, email, phoneNumber, password);
-        });
-    }
+        errorMessage.setValue(null);
+        navigateToMain.setValue(false);
 
-    private void createUser(final String name, final String email, final String phoneNumber, final String password) {
         authRepository.signUp(email, password)
-                .thenAccept(result -> {
-                    if (result.isSuccessful()) {
-                        String userId = result.getData();
-                        MyUser myUser = new MyUser(userId, email, name, phoneNumber);
-                        saveUserInfo(myUser);
-                    } else {
-                        isLoading.postValue(false);
-                        errorMessage.postValue("Registration failed: " + result.getException().getMessage());
-                    }
+                .thenCompose(userId -> {
+                    MyUser myUser = new MyUser(userId, email, name, phoneNumber);
+                    return myUsersRepository.saveUserData(myUser);
                 })
-                .exceptionally(throwable -> {
-                    isLoading.postValue(false);
-                    errorMessage.postValue("Registration failed: " + throwable.getMessage());
-                    return null;
-                });
-    }
-
-    private void saveUserInfo(MyUser myUser) {
-        myUsersRepository.saveUserData(myUser)
                 .thenAccept(aVoid -> {
                     isLoading.postValue(false);
                     navigateToMain.postValue(true);
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);
-                    errorMessage.postValue("Failed to save user data: " + throwable.getMessage());
+                    errorMessage.postValue(throwable.getMessage());
                     return null;
                 });
     }

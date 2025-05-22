@@ -25,7 +25,7 @@ public class SignInFragment extends Fragment {
 
     SignInViewModel viewModel;
     private NavController navController;
-    private FragmentSignInBinding binding; // Use View Binding
+    private FragmentSignInBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class SignInFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
 
-        viewModel = new ViewModelProvider(this).get(SignInViewModel.class); // Get ViewModel instance
+        viewModel = new ViewModelProvider(this).get(SignInViewModel.class);
 
         setListeners();
         observeViewModel();
@@ -51,7 +51,7 @@ public class SignInFragment extends Fragment {
             if (!email.isEmpty() && !password.isEmpty()) {
                 viewModel.signIn(email, password);
             } else {
-                Snackbar.make(binding.getRoot(), "Пожалуйста, введите email и пароль", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), "Пожалуйста, введите email и пароль.", Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -91,7 +91,6 @@ public class SignInFragment extends Fragment {
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // You might want to add a ProgressBar to your layout and control its visibility here
             binding.buttonSignIn.setEnabled(!isLoading);
         });
     }
@@ -99,6 +98,6 @@ public class SignInFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Important for memory management
+        binding = null;
     }
 }

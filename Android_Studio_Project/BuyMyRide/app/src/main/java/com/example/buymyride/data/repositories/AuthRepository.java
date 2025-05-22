@@ -3,7 +3,6 @@ package com.example.buymyride.data.repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.buymyride.data.models.Result;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -22,39 +21,39 @@ public class AuthRepository {
     }
 
 
-    public CompletableFuture<Result<String>> signUp(String email, String password) {
-        CompletableFuture<Result<String>> future = new CompletableFuture<>();
+    public CompletableFuture<String> signUp(String email, String password) {
+        CompletableFuture<String> future = new CompletableFuture<>();
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = task.getResult().getUser();
                         if (firebaseUser != null) {
                             String userId = firebaseUser.getUid();
-                            future.complete(Result.success(userId));
+                            future.complete(userId);
                         } else {
-                            future.complete(Result.error(new RuntimeException("User is null")));
+                            future.completeExceptionally(new RuntimeException("User is null after sign-up"));
                         }
                     } else {
-                        future.complete(Result.error(new RuntimeException(task.getException().getMessage())));
+                        future.completeExceptionally(task.getException() != null ? task.getException() : new RuntimeException("Unknown sign-up error"));
                     }
                 });
         return future;
     }
 
-    public CompletableFuture<Result<String>> signIn(String email, String password) {
-        CompletableFuture<Result<String>> future = new CompletableFuture<>();
+    public CompletableFuture<String> signIn(String email, String password) {
+        CompletableFuture<String> future = new CompletableFuture<>();
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = task.getResult().getUser();
                         if (firebaseUser != null) {
                             String userId = firebaseUser.getUid();
-                            future.complete(Result.success(userId));
+                            future.complete(userId);
                         } else {
-                            future.complete(Result.error(new RuntimeException("User is null")));
+                            future.completeExceptionally(new RuntimeException("User is null after successful sign-in"));
                         }
                     } else {
-                        future.complete(Result.error(new RuntimeException(task.getException().getMessage())));
+                        future.completeExceptionally(task.getException() != null ? task.getException() : new RuntimeException("Unknown sign-in error"));
                     }
                 });
         return future;
@@ -75,14 +74,16 @@ public class AuthRepository {
         firebaseAuth.signOut();
     }
 
-    public CompletableFuture<Result<Void>> resetPassword(String email) {
-        CompletableFuture<Result<Void>> future = new CompletableFuture<>();
+    public CompletableFuture<Void> resetPassword(String email) { // Changed return type to CompletableFuture<Void>
+        CompletableFuture<Void> future = new CompletableFuture<>();
         firebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        future.complete(Result.success(null)); // Use null for Void
+                        future.complete(null); // Complete successfully with null for Void
                     } else {
-                        future.complete(Result.error(new RuntimeException(task.getException().getMessage())));
+                        // Complete exceptionally with the actual exception
+                        future.completeExceptionally(task.getException() != null ?
+                                task.getException() : new RuntimeException("Unknown error sending reset email"));
                     }
                 });
         return future;
