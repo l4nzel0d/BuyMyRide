@@ -27,10 +27,9 @@ public class ProfileViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private final MyUsersRepository myUsersRepository;
 
-
-    private final LiveData<String> name;
-    private final LiveData<String> email;
-    private final LiveData<String> phone;
+    private final MutableLiveData<String> cachedName = new MutableLiveData<>("");
+    private final MutableLiveData<String> cachedEmail = new MutableLiveData<>("");
+    private final MutableLiveData<String> cachedPhone = new MutableLiveData<>("");
 
     private final MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
@@ -49,9 +48,7 @@ public class ProfileViewModel extends ViewModel {
 
         currentUserData = Transformations.switchMap(authRepository.getLiveFirebaseUser(), firebaseUser -> {
             if (firebaseUser == null) {
-                navigateEvent.postValue(new OneTimeEvent<>(ProfileNavigationDestination.AUTH));
-                errorMessage.setValue(null);
-                isLoading.setValue(false);
+                handleSignedOutState();
                 return new MutableLiveData<>(null);
             } else {
                 isLoading.setValue(true);
@@ -59,9 +56,6 @@ public class ProfileViewModel extends ViewModel {
             }
         });
 
-        name = Transformations.map(currentUserData, user -> user != null ? user.name() : "");
-        email = Transformations.map(currentUserData, user -> user != null ? user.email() : "");
-        phone = Transformations.map(currentUserData, user -> user != null ? user.phoneNumber() : "");
 
         observeUserDataStates();
     }
@@ -70,27 +64,28 @@ public class ProfileViewModel extends ViewModel {
         userDataObserver = user -> {
             isLoading.setValue(false);
 
-            if (user == null && authRepository.getLiveFirebaseUser().getValue() != null) {
+            if (user != null) {
+                cachedName.setValue(user.name());
+                cachedEmail.setValue(user.email());
+                cachedPhone.setValue(user.phoneNumber());
+            } else if (authRepository.getLiveFirebaseUser().getValue() != null) {
                 errorMessage.setValue(new OneTimeEvent<>("User profile data not found or failed to load."));
-            } else if (user != null) {
-                errorMessage.setValue(null);
             }
         };
         currentUserData.observeForever(userDataObserver);
     }
 
 
-
     public LiveData<String> getName() {
-        return name;
+        return cachedName;
     }
 
     public LiveData<String> getEmail() {
-        return email;
+        return cachedEmail;
     }
 
     public LiveData<String> getPhone() {
-        return phone;
+        return cachedPhone;
     }
 
     public LiveData<OneTimeEvent<String>> getErrorMessage() {
@@ -106,12 +101,15 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void signOut() {
-        isLoading.setValue(true);
         authRepository.signOut();
     }
 
     public void navigateToEditProfile() {
         navigateEvent.setValue(new OneTimeEvent<>(ProfileNavigationDestination.EDIT_PROFILE));
+    }
+
+    private void handleSignedOutState() {
+        navigateEvent.postValue(new OneTimeEvent<>(ProfileNavigationDestination.AUTH));
     }
 
     @Override
