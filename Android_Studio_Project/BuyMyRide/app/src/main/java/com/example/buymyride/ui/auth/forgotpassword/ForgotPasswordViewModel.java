@@ -21,11 +21,11 @@ public class ForgotPasswordViewModel extends ViewModel {
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
+    private final MutableLiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> navigateEvent = new MutableLiveData<>();
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
-
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
@@ -35,19 +35,18 @@ public class ForgotPasswordViewModel extends ViewModel {
         return isEmailSent;
     }
 
-    private final MutableLiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> navigateEvent = new MutableLiveData<>();
-
     public LiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> getNavigateEvent() {
         return navigateEvent;
     }
 
-    public void navigateBack() {
-        navigateEvent.setValue(new OneTimeEvent<>(ForgotPasswordNavigationDestination.GO_BACK));
-    }
 
     @Inject
     public ForgotPasswordViewModel(AuthRepository authRepository) {
         this.authRepository = authRepository;
+    }
+
+    public void navigateBack() {
+        navigateEvent.setValue(new OneTimeEvent<>(ForgotPasswordNavigationDestination.GO_BACK));
     }
 
     public void resetPassword(String email) {

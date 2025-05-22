@@ -1,4 +1,4 @@
-package com.example.buymyride.ui.main.profile;
+package com.example.buymyride.ui.main.profile.main;
 
 import android.content.Intent;
 import android.os.Bundle;

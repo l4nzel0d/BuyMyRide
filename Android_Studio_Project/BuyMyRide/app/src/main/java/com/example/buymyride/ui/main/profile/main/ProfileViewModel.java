@@ -1,4 +1,4 @@
-package com.example.buymyride.ui.main.profile;
+package com.example.buymyride.ui.main.profile.main;
 
 import android.os.Handler;
 import android.os.Looper;
