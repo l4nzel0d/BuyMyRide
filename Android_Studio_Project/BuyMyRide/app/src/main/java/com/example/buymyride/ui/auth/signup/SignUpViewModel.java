@@ -22,21 +22,16 @@ public class SignUpViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private final MyUsersRepository myUsersRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignIn = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
+    private final MutableLiveData<OneTimeEvent<SignUpNavigationDestination>> navigateEvent = new MutableLiveData<>();
+    public LiveData<OneTimeEvent<SignUpNavigationDestination>> getNavigateEvent() {
+        return navigateEvent;
+    }
 
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
-    }
-
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignIn() {
-        return navigateToSignIn;
-    }
-
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToMain() {
-        return navigateToMain;
     }
 
     public LiveData<Boolean> getIsLoading() {
@@ -60,7 +55,7 @@ public class SignUpViewModel extends ViewModel {
                 })
                 .thenAccept(aVoid -> {
                     isLoading.postValue(false);
-                    navigateToMain.postValue(new OneTimeEvent<>(true));
+                    navigateEvent.postValue(new OneTimeEvent<>(SignUpNavigationDestination.MAIN));
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);
@@ -70,6 +65,6 @@ public class SignUpViewModel extends ViewModel {
     }
 
     public void navigateToSignIn() {
-        navigateToSignIn.setValue(new OneTimeEvent<>(true));
+        navigateEvent.setValue(new OneTimeEvent<>(SignUpNavigationDestination.SIGN_IN));
     }
 }

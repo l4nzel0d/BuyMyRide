@@ -15,27 +15,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class SignInViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignUp = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToForgotPassword = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
+    private final MutableLiveData<OneTimeEvent<SignInNavigationDestination>> navigateEvent = new MutableLiveData<>();
+    public LiveData<OneTimeEvent<SignInNavigationDestination>> getNavigateEvent() {
+        return navigateEvent;
+    }
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
 
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignUp() {
-        return navigateToSignUp;
-    }
-
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToForgotPassword() {
-        return navigateToForgotPassword;
-    }
-
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToMain() {
-        return navigateToMain;
-    }
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
@@ -51,7 +41,7 @@ public class SignInViewModel extends ViewModel {
         authRepository.signIn(email, password)
                 .thenAccept(result -> {
                     isLoading.setValue(false);
-                    navigateToMain.setValue(new OneTimeEvent<>(true));
+                    navigateEvent.postValue(new OneTimeEvent<>(SignInNavigationDestination.MAIN));
                 })
                 .exceptionally(throwable -> {
                     isLoading.setValue(false);
@@ -61,10 +51,10 @@ public class SignInViewModel extends ViewModel {
     }
 
     public void navigateToSignUp() {
-        navigateToSignUp.setValue(new OneTimeEvent<>(true));
+        navigateEvent.setValue(new OneTimeEvent<>(SignInNavigationDestination.SIGN_UP));
     }
 
     public void navigateToForgotPassword() {
-        navigateToForgotPassword.setValue(new OneTimeEvent<>(true));
+        navigateEvent.setValue(new OneTimeEvent<>(SignInNavigationDestination.FORGOT_PASSWORD));
     }
 }

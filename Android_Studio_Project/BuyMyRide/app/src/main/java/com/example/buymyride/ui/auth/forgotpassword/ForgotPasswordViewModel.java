@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.buymyride.data.repositories.AuthRepository;
+import com.example.buymyride.ui.auth.signin.SignInNavigationDestination;
 import com.example.buymyride.util.OneTimeEvent;
 
 import java.util.concurrent.Executor;
@@ -18,16 +19,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class ForgotPasswordViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
-    }
-
-    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignIn() {
-        return navigateToSignIn;
     }
 
 
@@ -37,6 +33,16 @@ public class ForgotPasswordViewModel extends ViewModel {
 
     public LiveData<Boolean> getIsEmailSent() {
         return isEmailSent;
+    }
+
+    private final MutableLiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> navigateEvent = new MutableLiveData<>();
+
+    public LiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> getNavigateEvent() {
+        return navigateEvent;
+    }
+
+    public void navigateBack() {
+        navigateEvent.setValue(new OneTimeEvent<>(ForgotPasswordNavigationDestination.GO_BACK));
     }
 
     @Inject
@@ -50,7 +56,7 @@ public class ForgotPasswordViewModel extends ViewModel {
                 .thenAccept(result -> {
                     isLoading.postValue(false);
                     isEmailSent.postValue(true);
-                    navigateToSignIn.postValue(new OneTimeEvent<>(true));
+                    navigateEvent.postValue(new OneTimeEvent<>(ForgotPasswordNavigationDestination.GO_BACK));
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);

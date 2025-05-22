@@ -71,30 +71,22 @@ public class SignInFragment extends Fragment {
             }
         });
 
-        viewModel.getNavigateToSignUp().observe(getViewLifecycleOwner(), event -> {
-            Boolean navigate = event.getContentIfNotHandled();
-            if (Boolean.TRUE.equals(navigate)) {
-                navController.navigate(R.id.action_signInFragment_to_signUpFragment);
-            }
-        });
-
-        viewModel.getNavigateToForgotPassword().observe(getViewLifecycleOwner(), event -> {
-            Boolean navigate = event.getContentIfNotHandled();
-            if (Boolean.TRUE.equals(navigate)) {
-                navController.navigate(R.id.action_signInFragment_to_forgotPassword);
-            }
-        });
-
-        viewModel.getNavigateToMain().observe(getViewLifecycleOwner(), event -> {
-            Boolean navigate = event.getContentIfNotHandled();
-            if (Boolean.TRUE.equals(navigate)) {
-                startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().finish();
-            }
-        });
-
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             binding.buttonSignIn.setEnabled(!isLoading);
+        });
+
+        viewModel.getNavigateEvent().observe(getViewLifecycleOwner(), event -> {
+            SignInNavigationDestination destination = event.getContentIfNotHandled();
+            if (destination == null) return;
+
+            switch (destination) {
+                case SIGN_UP -> navController.navigate(R.id.action_signInFragment_to_signUpFragment);
+                case FORGOT_PASSWORD -> navController.navigate(R.id.action_signInFragment_to_forgotPassword);
+                case MAIN -> {
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                    getActivity().finish();
+                }
+            }
         });
     }
 

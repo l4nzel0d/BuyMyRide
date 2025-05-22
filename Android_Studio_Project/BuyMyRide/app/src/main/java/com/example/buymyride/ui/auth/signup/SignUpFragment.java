@@ -71,18 +71,16 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), event -> {
-            Boolean navigate = event.getContentIfNotHandled();
-            if (Boolean.TRUE.equals(navigate)) {
-                navController.navigate(R.id.action_signUpFragment_to_signInFragment);
-            }
-        });
+        viewModel.getNavigateEvent().observe(getViewLifecycleOwner(), event -> {
+            SignUpNavigationDestination destination = event.getContentIfNotHandled();
+            if (destination == null) return;
 
-        viewModel.getNavigateToMain().observe(getViewLifecycleOwner(), event -> {
-            Boolean navigate = event.getContentIfNotHandled();
-            if (Boolean.TRUE.equals(navigate)) {
-                startActivity(new Intent(getContext(), MainActivity.class));
-                getActivity().finish();
+            switch (destination) {
+                case SIGN_IN -> navController.navigate(R.id.action_signUpFragment_to_signInFragment);
+                case MAIN -> {
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                    getActivity().finish();
+                }
             }
         });
 
