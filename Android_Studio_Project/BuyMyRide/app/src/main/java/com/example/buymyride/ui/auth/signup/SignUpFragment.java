@@ -52,9 +52,8 @@ public class SignUpFragment extends Fragment {
             String phone = binding.inputPhone.getText().toString().trim();
             String password = binding.inputPassword.getText().toString().trim();
 
-            // Basic input validation (you might want more robust validation)
             if (!name.isEmpty() && !email.isEmpty() && !phone.isEmpty() && !password.isEmpty()) {
-                viewModel.signUp(name, email, phone, password); // For simplicity, only registering with email and password
+                viewModel.signUp(name, email, phone, password);
             } else {
                 Snackbar.make(binding.getRoot(), "Пожалуйста, заполните все поля", Snackbar.LENGTH_SHORT).show();
             }
@@ -72,13 +71,15 @@ public class SignUpFragment extends Fragment {
             }
         });
 
-        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), navigate -> {
+        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), event -> {
+            Boolean navigate = event.getContentIfNotHandled();
             if (Boolean.TRUE.equals(navigate)) {
                 navController.navigate(R.id.action_signUpFragment_to_signInFragment);
             }
         });
 
-        viewModel.getNavigateToMain().observe(getViewLifecycleOwner(), navigate -> {
+        viewModel.getNavigateToMain().observe(getViewLifecycleOwner(), event -> {
+            Boolean navigate = event.getContentIfNotHandled();
             if (Boolean.TRUE.equals(navigate)) {
                 startActivity(new Intent(getContext(), MainActivity.class));
                 getActivity().finish();

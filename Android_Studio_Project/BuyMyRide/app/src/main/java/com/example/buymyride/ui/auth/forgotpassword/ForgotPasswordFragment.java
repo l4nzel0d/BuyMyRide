@@ -70,16 +70,17 @@ public class ForgotPasswordFragment extends Fragment {
             binding.buttonResetPassword.setEnabled(!isLoading);
         });
 
-        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), navigateToSignIn -> {
-            if (navigateToSignIn) {
-                navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
+        viewModel.getNavigateToSignIn().observe(getViewLifecycleOwner(), event -> {
+            Boolean navigate = event.getContentIfNotHandled();
+            if (Boolean.TRUE.equals(navigate)) {
+                navController.navigateUp();
             }
         });
     }
 
     private void setListeners() {
         topAppBar.setNavigationOnClickListener(v -> {
-            navController.navigate(R.id.action_forgotPasswordFragment_to_signInFragment);
+            navController.navigateUp();
         });
 
         binding.buttonResetPassword.setOnClickListener(v -> {

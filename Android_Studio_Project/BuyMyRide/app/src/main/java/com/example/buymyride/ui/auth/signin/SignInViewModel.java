@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.buymyride.data.repositories.AuthRepository;
+import com.example.buymyride.util.OneTimeEvent;
 
 import javax.inject.Inject;
 
@@ -14,24 +15,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class SignInViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToSignUp = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToForgotPassword = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignUp = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToForgotPassword = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
 
-    public LiveData<Boolean> getNavigateToSignUp() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignUp() {
         return navigateToSignUp;
     }
 
-    public LiveData<Boolean> getNavigateToForgotPassword() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToForgotPassword() {
         return navigateToForgotPassword;
     }
 
-    public LiveData<Boolean> getNavigateToMain() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToMain() {
         return navigateToMain;
     }
 
@@ -49,7 +51,7 @@ public class SignInViewModel extends ViewModel {
         authRepository.signIn(email, password)
                 .thenAccept(result -> {
                     isLoading.setValue(false);
-                    navigateToMain.setValue(true);
+                    navigateToMain.setValue(new OneTimeEvent<>(true));
                 })
                 .exceptionally(throwable -> {
                     isLoading.setValue(false);
@@ -59,10 +61,10 @@ public class SignInViewModel extends ViewModel {
     }
 
     public void navigateToSignUp() {
-        navigateToSignUp.setValue(true);
+        navigateToSignUp.setValue(new OneTimeEvent<>(true));
     }
 
     public void navigateToForgotPassword() {
-        navigateToForgotPassword.setValue(true);
+        navigateToForgotPassword.setValue(new OneTimeEvent<>(true));
     }
 }

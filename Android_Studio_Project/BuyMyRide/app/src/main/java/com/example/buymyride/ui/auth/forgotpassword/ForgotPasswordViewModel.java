@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.buymyride.data.repositories.AuthRepository;
+import com.example.buymyride.util.OneTimeEvent;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -17,16 +18,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class ForgotPasswordViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>(false);
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignIn = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
-    private Executor executor = Executors.newSingleThreadExecutor();
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
 
-    public LiveData<Boolean> getNavigateToSignIn() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignIn() {
         return navigateToSignIn;
     }
 
@@ -46,19 +46,17 @@ public class ForgotPasswordViewModel extends ViewModel {
 
     public void resetPassword(String email) {
         isLoading.setValue(true);
-        executor.execute(() -> {
-            authRepository.resetPassword(email)
-                    .thenAccept(result -> {
-                        isLoading.postValue(false);
-                        isEmailSent.postValue(true);
-                        navigateToSignIn.postValue(true);
-                    })
-                    .exceptionally(throwable -> {
-                        isLoading.postValue(false);
-                        errorMessage.postValue(throwable.getMessage());
-                        return null;
-                    });
-        });
+        authRepository.resetPassword(email)
+                .thenAccept(result -> {
+                    isLoading.postValue(false);
+                    isEmailSent.postValue(true);
+                    navigateToSignIn.postValue(new OneTimeEvent<>(true));
+                })
+                .exceptionally(throwable -> {
+                    isLoading.postValue(false);
+                    errorMessage.postValue(throwable.getMessage());
+                    return null;
+                });
     }
 
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.buymyride.data.models.MyUser;
 import com.example.buymyride.data.repositories.AuthRepository;
 import com.example.buymyride.data.repositories.MyUsersRepository;
+import com.example.buymyride.util.OneTimeEvent;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -21,8 +22,8 @@ public class SignUpViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private final MyUsersRepository myUsersRepository;
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToSignIn = new MutableLiveData<>();
-    private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToSignIn = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<Boolean>> navigateToMain = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
 
@@ -30,11 +31,11 @@ public class SignUpViewModel extends ViewModel {
         return errorMessage;
     }
 
-    public LiveData<Boolean> getNavigateToSignIn() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToSignIn() {
         return navigateToSignIn;
     }
 
-    public LiveData<Boolean> getNavigateToMain() {
+    public LiveData<OneTimeEvent<Boolean>> getNavigateToMain() {
         return navigateToMain;
     }
 
@@ -51,7 +52,6 @@ public class SignUpViewModel extends ViewModel {
     public void signUp(final String name, final String email, final String phoneNumber, final String password) {
         isLoading.setValue(true);
         errorMessage.setValue(null);
-        navigateToMain.setValue(false);
 
         authRepository.signUp(email, password)
                 .thenCompose(userId -> {
@@ -60,7 +60,7 @@ public class SignUpViewModel extends ViewModel {
                 })
                 .thenAccept(aVoid -> {
                     isLoading.postValue(false);
-                    navigateToMain.postValue(true);
+                    navigateToMain.postValue(new OneTimeEvent<>(true));
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);
@@ -70,6 +70,6 @@ public class SignUpViewModel extends ViewModel {
     }
 
     public void navigateToSignIn() {
-        navigateToSignIn.setValue(true);
+        navigateToSignIn.setValue(new OneTimeEvent<>(true));
     }
 }
