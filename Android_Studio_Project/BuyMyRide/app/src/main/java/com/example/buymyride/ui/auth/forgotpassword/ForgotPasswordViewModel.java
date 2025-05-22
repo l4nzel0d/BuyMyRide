@@ -20,7 +20,7 @@ public class ForgotPasswordViewModel extends ViewModel {
     private final AuthRepository authRepository;
     private MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
+    private MutableLiveData<OneTimeEvent<Boolean>> isEmailSent = new MutableLiveData<>();
     private final MutableLiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> navigateEvent = new MutableLiveData<>();
 
     public LiveData<OneTimeEvent<String>> getErrorMessage() {
@@ -31,7 +31,7 @@ public class ForgotPasswordViewModel extends ViewModel {
         return isLoading;
     }
 
-    public LiveData<Boolean> getIsEmailSent() {
+    public LiveData<OneTimeEvent<Boolean>> getIsEmailSent() {
         return isEmailSent;
     }
 
@@ -54,7 +54,7 @@ public class ForgotPasswordViewModel extends ViewModel {
         authRepository.resetPassword(email)
                 .thenAccept(result -> {
                     isLoading.postValue(false);
-                    isEmailSent.postValue(true);
+                    isEmailSent.postValue(new OneTimeEvent<>(true));
                     navigateEvent.postValue(new OneTimeEvent<>(ForgotPasswordNavigationDestination.GO_BACK));
                 })
                 .exceptionally(throwable -> {

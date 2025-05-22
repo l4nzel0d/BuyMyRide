@@ -61,8 +61,10 @@ public class ForgotPasswordFragment extends Fragment {
             }
         });
 
-        viewModel.getIsEmailSent().observe(getViewLifecycleOwner(), isSent -> {
-            if (isSent) {
+        viewModel.getIsEmailSent().observe(getViewLifecycleOwner(), event -> {
+            if (event == null) return;
+            Boolean isSent = event.getContentIfNotHandled();
+            if (Boolean.TRUE.equals(isSent)) {
                 Snackbar.make(requireActivity().findViewById(android.R.id.content), "Сообщение для сброса пароля отправлено. Проверьте вашу почту.", Snackbar.LENGTH_LONG)
                         .show();
             }
