@@ -20,6 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class CatalogViewModel extends ViewModel {
 
     private LiveData<List<Car>> allCarsLiveData;
@@ -33,29 +38,7 @@ public class CatalogViewModel extends ViewModel {
     // Internal LiveData to hold favorite car IDs for MediatorLiveData
     private LiveData<List<String>> favoriteCarIdsSource;
 
-    // Factory
-    public static class Factory implements ViewModelProvider.Factory {
-        private final CarsRepository carsRepository;
-        private final MyUsersRepository myUsersRepository;
-        private final AuthRepository authRepository;
-
-        public Factory(CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
-            this.carsRepository = carsRepository;
-            this.myUsersRepository = myUsersRepository;
-            this.authRepository = authRepository;
-        }
-
-        @NonNull
-        @Override
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass, @NonNull CreationExtras extras) {
-            if (modelClass.isAssignableFrom(CatalogViewModel.class)) {
-                return (T) new CatalogViewModel(carsRepository, myUsersRepository, authRepository);
-            }
-            throw new IllegalArgumentException("Unknown ViewModel class");
-        }
-    }
-
-    // Constructor
+    @Inject
     public CatalogViewModel(CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
         this.carsRepository = carsRepository;
         this.myUsersRepository = myUsersRepository;
@@ -119,8 +102,6 @@ public class CatalogViewModel extends ViewModel {
         carsForDisplay.setValue(carCardModels);
     }
 
-
-
     private void initializeNumberOfCars() {
         this.numberOfCars = Transformations.map(allCarsLiveData, cars -> (cars != null) ? cars.size() : 0);
     }
@@ -138,7 +119,6 @@ public class CatalogViewModel extends ViewModel {
     public LiveData<SortOption> getSortOption() {
         return this.sortOption;
     }
-
 
     public void onSortOptionSelected(int menuItemId) {
         SortOption selectedOption = SortOption.fromMenuItemId(menuItemId);
@@ -175,3 +155,7 @@ public class CatalogViewModel extends ViewModel {
         }
     }
 }
+
+
+
+

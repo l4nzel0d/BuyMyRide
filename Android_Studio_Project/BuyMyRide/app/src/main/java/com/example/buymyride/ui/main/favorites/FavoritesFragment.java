@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.buymyride.R;
 import com.example.buymyride.data.models.CarCardModel;
 import com.example.buymyride.data.repositories.AuthRepository;
@@ -26,6 +28,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
 import androidx.navigation.Navigation;
 
 @AndroidEntryPoint
@@ -37,12 +40,6 @@ public class FavoritesFragment extends Fragment {
     private TextView noFavoritesText;
     private NavController navController;
 
-    @Inject
-    CarsRepository carsRepository;
-    @Inject
-    MyUsersRepository myUsersRepository;
-    @Inject
-    AuthRepository authRepository;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,7 +62,6 @@ public class FavoritesFragment extends Fragment {
                 if (carCardModel != null) {
                     NavDirections action = FavoritesFragmentDirections.actionFavoritesFragmentToCarDetailsFragment(carCardModel.getId());
                     navController.navigate(action);
-                    android.util.Log.d("FavoritesFragment", "Car clicked with ID: " + carCardModel.getId());
                 }
             }
 
@@ -73,14 +69,13 @@ public class FavoritesFragment extends Fragment {
             public void onFavoriteClick(int position) {
                 CarCardModel carCardModel = adapter.getCarCardModelAt(position);
                 if (carCardModel != null) {
-                    viewModel.updateFavoriteStatus(carCardModel.getId(), !carCardModel.isFavorite()); // Pass false to remove from favorites
+                    viewModel.updateFavoriteStatus(carCardModel.getId(), !carCardModel.isFavorite());
                 }
             }
         });
         recyclerView.setAdapter(adapter);
 
-        FavoritesViewModel.Factory factory = new FavoritesViewModel.Factory(carsRepository, myUsersRepository, authRepository);
-        viewModel = new ViewModelProvider(this, factory).get(FavoritesViewModel.class);
+        viewModel = new ViewModelProvider(this).get(FavoritesViewModel.class);
 
         viewModel.getFavoriteCars().observe(getViewLifecycleOwner(), carCardModels -> {
             adapter.setCarCardModelList(carCardModels);

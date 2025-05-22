@@ -36,12 +36,6 @@ public class CarDetailsFragment extends Fragment {
     private FragmentCarDetailsBinding binding;
     private CarDetailsViewModel viewModel;
     private String carId;
-    @Inject
-    CarsRepository carsRepository;
-    @Inject
-    MyUsersRepository myUsersRepository;
-    @Inject
-    AuthRepository authRepository;
     private MenuItem favoriteMenuItem;
 
     public CarDetailsFragment() {
@@ -51,11 +45,6 @@ public class CarDetailsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            carId = CarDetailsFragmentArgs.fromBundle(getArguments()).getCarId();
-        } else {
-            throw new IllegalArgumentException("Car ID is required");
-        }
     }
 
     @Override
@@ -67,8 +56,7 @@ public class CarDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        CarDetailsViewModel.Factory factory = new CarDetailsViewModel.Factory(carId, carsRepository, myUsersRepository, authRepository);
-        viewModel = new ViewModelProvider(this, factory).get(CarDetailsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(CarDetailsViewModel.class);
 
         // Set up RecyclerView for specs
         binding.recyclerViewCarSpecs.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -93,7 +81,7 @@ public class CarDetailsFragment extends Fragment {
                 if (icon != null) {
                     icon = DrawableCompat.wrap(icon);
                     DrawableCompat.setTint(icon, ContextCompat.getColor(requireContext(),
-                            isFavorite ? R.color.color_primary: R.color.black));
+                            isFavorite ? R.color.color_primary : R.color.black));
                     favoriteMenuItem.setIcon(icon);
                 }
             }

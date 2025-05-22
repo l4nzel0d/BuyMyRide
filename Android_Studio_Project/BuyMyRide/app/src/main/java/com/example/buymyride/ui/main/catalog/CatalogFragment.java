@@ -41,13 +41,6 @@ public class CatalogFragment extends Fragment {
     private CarCardAdapter carCardAdapter;
     private NavController navController;
 
-    // Repositories are injected directly into the Fragment as per your FavoritesFragment
-    @Inject
-    CarsRepository carsRepository;
-    @Inject
-    MyUsersRepository myUsersRepository;
-    @Inject
-    AuthRepository authRepository;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,8 +134,7 @@ public class CatalogFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        CatalogViewModel.Factory factory = new CatalogViewModel.Factory(carsRepository, myUsersRepository, authRepository);
-        viewModel = new ViewModelProvider(this, factory).get(CatalogViewModel.class);
+        viewModel = new ViewModelProvider(this).get(CatalogViewModel.class);
         Log.d(TAG, "setupViewModel: CatalogViewModel initialized.");
     }
 

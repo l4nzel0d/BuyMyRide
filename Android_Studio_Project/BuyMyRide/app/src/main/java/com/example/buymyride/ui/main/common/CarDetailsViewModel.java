@@ -3,6 +3,7 @@ package com.example.buymyride.ui.main.common;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.CreationExtras;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
+@HiltViewModel
 public class CarDetailsViewModel extends ViewModel {
 
     private MutableLiveData<Car> car = new MutableLiveData<>();
@@ -30,32 +32,14 @@ public class CarDetailsViewModel extends ViewModel {
 
     private String carId; // Hold the car ID.  Crucial for fetching.
 
-    // Use Factory to pass the carId
-    public static class Factory implements ViewModelProvider.Factory {
-        private final String carId;
-        private final CarsRepository carsRepository;
-        private final MyUsersRepository myUsersRepository; // Add to Factory
-        private final AuthRepository authRepository;  // Add AuthRepository
 
-        public Factory(String carId, CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
-            this.carId = carId;
-            this.carsRepository = carsRepository;
-            this.myUsersRepository = myUsersRepository;
-            this.authRepository = authRepository;
+    @Inject
+    public CarDetailsViewModel(SavedStateHandle savedStateHandle, CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) { // Add to Constructor
+        this.carId = savedStateHandle.get("carId");
+        if (this.carId == null) {
+            // Handle case where carId is not provided (e.g., throw IllegalArgumentException or log error)
+            throw new IllegalArgumentException("Car ID is required for CarDetailsViewModel");
         }
-
-        @NonNull
-        @Override
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass, @NonNull CreationExtras extras) {
-            if (modelClass.isAssignableFrom(CarDetailsViewModel.class)) {
-                return (T) new CarDetailsViewModel(carId, carsRepository, myUsersRepository, authRepository);
-            }
-            throw new IllegalArgumentException("Unknown ViewModel class");
-        }
-    }
-
-    public CarDetailsViewModel(String carId, CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) { // Add to Constructor
-        this.carId = carId;
         this.carsRepository = carsRepository;
         this.myUsersRepository = myUsersRepository;
         this.authRepository = authRepository;

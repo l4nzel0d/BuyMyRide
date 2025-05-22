@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
+@HiltViewModel
 public class FavoritesViewModel extends ViewModel {
 
     private LiveData<List<String>> favoriteCarIdsLiveData;
@@ -31,29 +32,7 @@ public class FavoritesViewModel extends ViewModel {
     private MyUsersRepository myUsersRepository;
     private AuthRepository authRepository;
 
-    // Factory for creating the ViewModel with dependencies
-    public static class Factory implements ViewModelProvider.Factory {
-        private final CarsRepository carsRepository;
-        private final MyUsersRepository myUsersRepository;
-        private final AuthRepository authRepository;
-
-        public Factory(CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
-            this.carsRepository = carsRepository;
-            this.myUsersRepository = myUsersRepository;
-            this.authRepository = authRepository;
-        }
-
-        @NonNull
-        @Override
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass, @NonNull CreationExtras extras) {
-            if (modelClass.isAssignableFrom(FavoritesViewModel.class)) {
-                return (T) new FavoritesViewModel(carsRepository, myUsersRepository, authRepository);
-            }
-            throw new IllegalArgumentException("Unknown ViewModel class");
-        }
-    }
-
-    // Constructor
+    @Inject
     public FavoritesViewModel(CarsRepository carsRepository, MyUsersRepository myUsersRepository, AuthRepository authRepository) {
         this.carsRepository = carsRepository;
         this.myUsersRepository = myUsersRepository;
@@ -114,7 +93,6 @@ public class FavoritesViewModel extends ViewModel {
                 System.err.println("Error updating favorite status: " + throwable.getMessage());
                 return null;
             });
-            // No need to explicitly reload here, the LiveData will handle updates
         }
     }
 }
