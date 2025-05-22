@@ -14,7 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class SignInViewModel extends ViewModel {
     private final AuthRepository authRepository;
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private final MutableLiveData<OneTimeEvent<SignInNavigationDestination>> navigateEvent = new MutableLiveData<>();
@@ -22,7 +22,7 @@ public class SignInViewModel extends ViewModel {
         return navigateEvent;
     }
 
-    public LiveData<String> getErrorMessage() {
+    public LiveData<OneTimeEvent<String>> getErrorMessage() {
         return errorMessage;
     }
 
@@ -45,7 +45,7 @@ public class SignInViewModel extends ViewModel {
                 })
                 .exceptionally(throwable -> {
                     isLoading.setValue(false);
-                    errorMessage.setValue(throwable.getMessage());
+                    errorMessage.setValue(new OneTimeEvent<>(throwable.getMessage()));
                     return null; // Return null because exceptionally expects a return value
                 });
     }

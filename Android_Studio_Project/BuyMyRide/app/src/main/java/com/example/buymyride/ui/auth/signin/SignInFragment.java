@@ -65,9 +65,11 @@ public class SignInFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
-            if (errorMessage != null) {
-                Snackbar.make(binding.getRoot(), errorMessage, Snackbar.LENGTH_SHORT).show();
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            if (event == null) return;
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
             }
         });
 

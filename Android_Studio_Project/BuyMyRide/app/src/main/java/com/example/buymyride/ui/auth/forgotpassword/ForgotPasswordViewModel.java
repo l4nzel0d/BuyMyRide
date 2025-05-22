@@ -18,12 +18,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class ForgotPasswordViewModel extends ViewModel {
     private final AuthRepository authRepository;
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isEmailSent = new MutableLiveData<>(false);
     private final MutableLiveData<OneTimeEvent<ForgotPasswordNavigationDestination>> navigateEvent = new MutableLiveData<>();
 
-    public LiveData<String> getErrorMessage() {
+    public LiveData<OneTimeEvent<String>> getErrorMessage() {
         return errorMessage;
     }
 
@@ -59,7 +59,7 @@ public class ForgotPasswordViewModel extends ViewModel {
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);
-                    errorMessage.postValue(throwable.getMessage());
+                    errorMessage.postValue(new OneTimeEvent<>(throwable.getMessage()));
                     return null;
                 });
     }

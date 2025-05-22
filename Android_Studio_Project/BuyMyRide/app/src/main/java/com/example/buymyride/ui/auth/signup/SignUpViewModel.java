@@ -21,7 +21,7 @@ public class SignUpViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
     private final MyUsersRepository myUsersRepository;
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<OneTimeEvent<String>> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private final MutableLiveData<OneTimeEvent<SignUpNavigationDestination>> navigateEvent = new MutableLiveData<>();
@@ -30,7 +30,7 @@ public class SignUpViewModel extends ViewModel {
     }
 
 
-    public LiveData<String> getErrorMessage() {
+    public LiveData<OneTimeEvent<String>> getErrorMessage() {
         return errorMessage;
     }
 
@@ -46,7 +46,6 @@ public class SignUpViewModel extends ViewModel {
 
     public void signUp(final String name, final String email, final String phoneNumber, final String password) {
         isLoading.setValue(true);
-        errorMessage.setValue(null);
 
         authRepository.signUp(email, password)
                 .thenCompose(userId -> {
@@ -59,7 +58,7 @@ public class SignUpViewModel extends ViewModel {
                 })
                 .exceptionally(throwable -> {
                     isLoading.postValue(false);
-                    errorMessage.postValue(throwable.getMessage());
+                    errorMessage.postValue(new OneTimeEvent<>(throwable.getMessage()));
                     return null;
                 });
     }
