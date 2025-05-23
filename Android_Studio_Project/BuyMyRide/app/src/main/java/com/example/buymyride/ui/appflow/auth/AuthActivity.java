@@ -1,6 +1,7 @@
 package com.example.buymyride.ui.appflow.auth;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +34,8 @@ public class AuthActivity extends AppCompatActivity {
                     return insets;
                 }
         );
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.auth_fragment_container);

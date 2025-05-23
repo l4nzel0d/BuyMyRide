@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="auth_appLogo_marginTop">65dp</dimen>
+    <dimen name="auth_pageTitle_marginTop">145dp</dimen>
+    <dimen name="auth_button_marginTop">540dp</dimen>
+</resources>

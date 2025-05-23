@@ -5,7 +5,7 @@
     android:id="@+id/auth_nav_graph"
     app:startDestination="@id/signInFragment">
     <fragment
-        android:id="@+id/forgotPassword"
+        android:id="@+id/forgotPasswordFragment"
         android:name="com.example.buymyride.ui.appflow.auth.forgotpassword.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
         tools:layout="@layout/fragment_forgot_password" />
@@ -21,7 +21,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_signInFragment_to_forgotPassword"
-            app:destination="@id/forgotPassword" />
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
