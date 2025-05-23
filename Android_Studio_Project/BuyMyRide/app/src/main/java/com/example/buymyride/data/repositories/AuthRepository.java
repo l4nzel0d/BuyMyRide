@@ -22,24 +22,14 @@ public class AuthRepository {
     public AuthRepository(FirebaseAuth firebaseAuth) {
         this.firebaseAuth = firebaseAuth;
 
-        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth auth) {
-                liveFirebaseUser.setValue(auth.getCurrentUser());
-            }
-        });
+        firebaseAuth.addAuthStateListener(auth -> liveFirebaseUser.setValue(auth.getCurrentUser()));
 
         liveFirebaseUser.setValue(firebaseAuth.getCurrentUser());
     }
 
     public LiveData<String> getLiveUserId() {
-        return Transformations.map(liveFirebaseUser, firebaseUser -> {
-            if (firebaseUser != null) {
-                return firebaseUser.getUid();
-            } else {
-                return null;
-            }
-        });
+        return Transformations.map(liveFirebaseUser, firebaseUser ->
+                firebaseUser != null ? firebaseUser.getUid() : null);
     }
 
     public CompletableFuture<String> signUp(String email, String password) {
@@ -55,7 +45,9 @@ public class AuthRepository {
                             future.completeExceptionally(new RuntimeException("User is null after sign-up"));
                         }
                     } else {
-                        future.completeExceptionally(task.getException() != null ? task.getException() : new RuntimeException("Unknown sign-up error"));
+                        future.completeExceptionally(
+                                task.getException() != null ? task.getException() : new RuntimeException("Unknown sign-up error")
+                        );
                     }
                 });
         return future;

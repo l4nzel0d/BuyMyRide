@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.buymyride.ui.main.profile.main.ProfileFragment"
+        android:name="com.example.buymyride.ui.appflow.main.profile.main.ProfileFragment"
         android:label="Profile" >
         <action
             android:id="@+id/action_profileFragment_to_editProfileFragment"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.example.buymyride.ui.main.profile.edit.EditProfileFragment"
+        android:name="com.example.buymyride.ui.appflow.main.profile.edit.EditProfileFragment"
         android:label="EditProfileFragment" />
 
 </navigation>

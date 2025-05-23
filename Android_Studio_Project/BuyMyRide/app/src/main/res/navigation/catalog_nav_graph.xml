@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/catalogFragment"
-        android:name="com.example.buymyride.ui.main.catalog.CatalogFragment"
+        android:name="com.example.buymyride.ui.appflow.main.catalog.CatalogFragment"
         android:label="Catalog">
         <action
             android:id="@+id/action_catalogFragment_to_carDetailsFragment"
@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/carDetailsFragment"
-        android:name="com.example.buymyride.ui.main.common.CarDetailsFragment"
+        android:name="com.example.buymyride.ui.appflow.main.common.CarDetailsFragment"
         android:label="Car Details">
         <argument
             android:name="carId"

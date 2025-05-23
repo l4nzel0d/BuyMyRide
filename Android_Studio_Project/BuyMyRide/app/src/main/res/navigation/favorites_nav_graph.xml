@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/favoritesFragment"
-        android:name="com.example.buymyride.ui.main.favorites.FavoritesFragment"
+        android:name="com.example.buymyride.ui.appflow.main.favorites.FavoritesFragment"
         android:label="Favorites">
         <action
             android:id="@+id/action_favoritesFragment_to_carDetailsFragment"
@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/carDetailsFragment"
-        android:name="com.example.buymyride.ui.main.common.CarDetailsFragment"
+        android:name="com.example.buymyride.ui.appflow.main.common.CarDetailsFragment"
         android:label="Car Details">
         <argument
             android:name="carId"

@@ -22,8 +22,8 @@ public class CarCardAdapter extends RecyclerView.Adapter<CarCardAdapter.CarViewH
     private OnItemClickListener itemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(int position); // Only pass position
-        void onFavoriteClick(int position); // Only pass position
+        void onItemClick(int position);
+        void onFavoriteClick(int position);
     }
 
     public CarCardAdapter(Context context, OnItemClickListener itemClickListener) {
@@ -54,8 +54,8 @@ public class CarCardAdapter extends RecyclerView.Adapter<CarCardAdapter.CarViewH
 
         holder.imageFavorite.setSelected(carCardModel.isFavorite());
 
-        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(position)); // Pass position
-        holder.imageFavorite.setOnClickListener(v -> itemClickListener.onFavoriteClick(position)); // Pass position
+        holder.itemView.setOnClickListener(v -> itemClickListener.onItemClick(position));
+        holder.imageFavorite.setOnClickListener(v -> itemClickListener.onFavoriteClick(position));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class CarCardAdapter extends RecyclerView.Adapter<CarCardAdapter.CarViewH
         if (position >= 0 && position < carCardModelList.size()) {
             return carCardModelList.get(position);
         }
-        return null; // Or throw an exception if you prefer
+        return null;
     }
 
     public static class CarViewHolder extends RecyclerView.ViewHolder {

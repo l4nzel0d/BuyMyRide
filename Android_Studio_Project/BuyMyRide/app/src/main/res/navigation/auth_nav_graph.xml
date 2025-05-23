@@ -6,12 +6,12 @@
     app:startDestination="@id/signInFragment">
     <fragment
         android:id="@+id/forgotPassword"
-        android:name="com.example.buymyride.ui.auth.forgotpassword.ForgotPasswordFragment"
+        android:name="com.example.buymyride.ui.appflow.auth.forgotpassword.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
         tools:layout="@layout/fragment_forgot_password" />
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.example.buymyride.ui.auth.signin.SignInFragment"
+        android:name="com.example.buymyride.ui.appflow.auth.signin.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in">
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.buymyride.ui.auth.signup.SignUpFragment"
+        android:name="com.example.buymyride.ui.appflow.auth.signup.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up">
         <action
